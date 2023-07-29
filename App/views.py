@@ -490,7 +490,7 @@ def edit_profile(request):
     if not logged_in(request):
         return HttpResponseRedirect('pages-login')
     try:
-        profile = Profiles(email=request.session["email"])
+        profile = Profiles.objects.get(email=request.session["email"])
         profile.username = request.POST['username']
         profile.job = request.POST['job']
         profile.company = request.POST['company']
@@ -508,7 +508,7 @@ def change_password(request):
     if not logged_in(request):
         return HttpResponseRedirect('pages-login')
     try:
-        profile = Profiles(email=request.session["email"])
+        profile = Profiles.objects.get(email=request.session["email"])
         profile.password = request.POST['password']
         profile.save()
         request.session[
