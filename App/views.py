@@ -8,8 +8,8 @@ import requests
 from django import template
 
 register = template.Library()
-client_id = 'AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2S7LCHGu-b6umZ'
-client_key = 'EI9D1G-ilWpyvJYesga2b3s13lqk53h3QSjsVY6UMhYqz29ZloMiRouTwFM82obO16fr725FblHHaNrl'
+client_id = 'AbP3nHHLY8cJ_75x4mzMEXBRYMdj7T2ntmDwPkDR1N1Z59koNcZUDkJqzalc6yjxYXOqKdUbm0k4S4kT'
+client_key = 'ECs6sIRj_F_oNA4Hq9QI9jDjp5w00A3tJ3ciP4blB-PzlTfmPX8QIkvjcQ9Ujy1S4BJ89a5rciHbF3Q1'
 
 iframe = 'ET-fOTwEB78NHvQF2wGouthaMjg5uYMT-MrpDnKrq8c='
 
