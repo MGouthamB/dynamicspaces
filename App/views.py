@@ -112,7 +112,7 @@ def register(request):
     try:
         profile = Profiles()
         profile.name = request.POST['name']
-        profile.email = request.POST['email']
+        profile.email = request.POST['email'].lower()
         profile.username = request.POST['username']
         profile.password = request.POST['password']
         profile.job = request.POST['job']
