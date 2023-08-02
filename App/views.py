@@ -6,6 +6,7 @@ import random
 import datetime
 import requests
 from django import template
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 register = template.Library()
 client_id = 'AbP3nHHLY8cJ_75x4mzMEXBRYMdj7T2ntmDwPkDR1N1Z59koNcZUDkJqzalc6yjxYXOqKdUbm0k4S4kT'
@@ -240,7 +241,7 @@ def editing_job(request):
             'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error Editing<br>Please try again.</b>'
         return HttpResponseRedirect('edit-post')
 
-
+@xframe_options_exempt
 def GroziitDynamicSpace(request):
     if not logged_in(request):
         try:
@@ -274,7 +275,7 @@ def GroziitDynamicSpace(request):
     jobs = Jobs.objects.filter(posted_by=request.session['email'])
     return render(request, "GroziitJobs.html", {'jobs': jobs})
 
-
+@xframe_options_exempt
 def postdetail(request):
     if not logged_in(request):
         try:
