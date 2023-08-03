@@ -1080,6 +1080,12 @@
             display: none; /* Hide the scrollbar for Firefox */
         }
     </style>
+    <script>
+        $(document).ready(function() {
+            var height = $(".job").height() + $(".wrapper").height() + $(".search-menu").height() +$(".main-container").height()
+            window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
+        });
+    </script>
 </head>
 <body>
 <div class="job">

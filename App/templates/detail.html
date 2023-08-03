@@ -111,7 +111,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: scroll;
+            overflow: hidden;
             background-color: var(--theme-bg-color);
         }
 
@@ -1093,6 +1093,16 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function() {
+            var height = $(".job").height() + $(".searched-jobs").height() + $(".overview-text").height() + 20//+$(".main-container").height();
+            window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
+            {#alert(height);#}
+        });
+    </script>
 </head>
 <body>
 <div class="job">
