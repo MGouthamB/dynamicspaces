@@ -1098,7 +1098,9 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $(document).ready(function() {
-            var height = $(".job").height() + $(".searched-jobs").height() + $(".overview-text").height() + 20//+$(".main-container").height();
+            {#alert("hi");#}
+            var height =  $(".overview-text").height() ; //+ $(".overview-text").height() + 20//+$(".main-container").height();
+            {#alert("hsih");#}
             window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
             {#alert(height);#}
         });
