@@ -9,8 +9,8 @@ from django import template
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 register = template.Library()
-client_id = 'AbP3nHHLY8cJ_75x4mzMEXBRYMdj7T2ntmDwPkDR1N1Z59koNcZUDkJqzalc6yjxYXOqKdUbm0k4S4kT'
-client_key = 'ECs6sIRj_F_oNA4Hq9QI9jDjp5w00A3tJ3ciP4blB-PzlTfmPX8QIkvjcQ9Ujy1S4BJ89a5rciHbF3Q1'
+client_id = 'AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2S7LCHGu-b6umZ'
+client_key = 'EI9D1G-ilWpyvJYesga2b3s13lqk53h3QSjsVY6UMhYqz29ZloMiRouTwFM82obO16fr725FblHHaNrl'
 
 iframe = 'ET-fOTwEB78NHvQF2wGouthaMjg5uYMT-MrpDnKrq8c='
 
@@ -20,7 +20,7 @@ def get_access_token():
         'grant_type': 'client_credentials',
 
     }
-    response = requests.post('https://api-m.sandbox.paypal.com/v1/oauth2/token', data=data, auth=(
+    response = requests.post('https://api-m.paypal.com/v1/oauth2/token', data=data, auth=(
         client_id, client_key))
     return response.json()["access_token"]
 
@@ -41,7 +41,7 @@ def payment_check(request,id="",email=""):
             id = user.subscriber_id
 
         subscriptions_response = requests.get(
-            'https://api-m.sandbox.paypal.com/v1/billing/subscriptions/' + id,
+            'https://api-m.paypal.com/v1/billing/subscriptions/' + id,
             headers=headers)
 
         print("subscriptionID:", id, subscriptions_response.json()["status"])
@@ -462,7 +462,7 @@ def cancelsub(request):
         }
 
         response = requests.post(
-            'https://api-m.sandbox.paypal.com/v1/billing/subscriptions/' + user.subscriber_id + '/cancel',
+            'https://api-m.paypal.com/v1/billing/subscriptions/' + user.subscriber_id + '/cancel',
             headers=headers,
             json=json_data,
         )

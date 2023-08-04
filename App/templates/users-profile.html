@@ -16,7 +16,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-<script src="https://www.paypal.com/sdk/js?client-id=AbP3nHHLY8cJ_75x4mzMEXBRYMdj7T2ntmDwPkDR1N1Z59koNcZUDkJqzalc6yjxYXOqKdUbm0k4S4kT&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2S7LCHGu-b6umZ&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
     {% include 'alerts.html' %}
 
 </head>
@@ -182,7 +182,7 @@
 
                                 <!-- Settings Form -->
                                 {% if not profile.subscriber %}
-                                    <div id="paypal-button-container-P-2K673906HP7298917MTEYXSY"
+                                    <div id="paypal-button-container-P-5YC382822J373372HMTATEAQ"
                                          class="col-lg-6 mx-auto">
                                         <form method="post" action="payment" id="paymentform">
                                             {% csrf_token %}
@@ -200,14 +200,14 @@
                                                 createSubscription: function (data, actions) {
                                                     return actions.subscription.create({
                                                         /* Creates the subscription */
-                                                        plan_id: 'P-2K673906HP7298917MTEYXSY'
+                                                        plan_id: 'P-5YC382822J373372HMTATEAQ'
                                                     });
                                                 },
                                                 onApprove: function (data, actions) {
                                                     $("#subscriptionID").val(data.subscriptionID);
                                                     $("#paymentform").submit();
                                                 }
-                                            }).render('#paypal-button-container-P-2K673906HP7298917MTEYXSY'); // Renders the PayPal button
+                                            }).render('#paypal-button-container-P-5YC382822J373372HMTATEAQ'); // Renders the PayPal button
                                         </script>
                                     </div>
                                 {% else %}
