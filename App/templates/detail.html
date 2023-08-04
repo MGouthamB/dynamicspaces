@@ -111,7 +111,7 @@
             display: flex;
             flex-direction: column;
             height: auto;
-            overflow: clip;
+            overflow: scroll;
             background-color: var(--theme-bg-color);
         }
 
@@ -1092,14 +1092,17 @@
                 padding: 0 20px;
             }
         }
+        body::-webkit-scrollbar{
+    display: none;
+  }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            var height =  $(".job-bg").height()+$(".job-logos").height()+$(".job-title-wrapper").height()+$(".job-subtitle-wrapper").height()+$(".explain-bar").height()+$(".overview-text").height()+500;
-            window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
-
-        });
+        {#$(document).ready(function() {#}
+        {#    var height =  $(".job-bg").height()+$(".job-logos").height()+$(".job-title-wrapper").height()+$(".job-subtitle-wrapper").height()+$(".explain-bar").height()+$(".overview-text").height()+500;#}
+        {#    window.parent.postMessage({type: 'iframeHeight', height: height}, '*');#}
+        {##}
+        {#});#}
     </script>
 </head>
 <body>
