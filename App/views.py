@@ -510,7 +510,7 @@ def change_password(request):
         return HttpResponseRedirect('pages-login')
     try:
         profile = Profiles.objects.get(email=request.session["email"])
-        profile.password = request.POST['password']
+        profile.password = request.POST['newpassword']
         profile.save()
         request.session[
             'message'] = '<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully change account password!</b>'
