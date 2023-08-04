@@ -1096,9 +1096,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            var height =  $(".overview-text").height()+$(".job-explain").height();
-            alert(height);
+            var height =  $(".job-bg").height()+$(".job-logos").height()+$(".job-title-wrapper").height()+$(".job-subtitle-wrapper").height()+$(".explain-bar").height()+$(".overview-text").height()+500;
             window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
+
         });
     </script>
 </head>

@@ -4,7 +4,6 @@ window.addEventListener('message', function(event) {
     var iframe = document.getElementById('DSiframe');
     if (iframe) {
       iframe.style.height = event.data.height+'px';
-      alert(event.data.height);
       isdataread=true;
 
     }
