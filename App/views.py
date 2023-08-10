@@ -983,7 +983,6 @@ def change_password(request):
 def dynamicspace_form(request):
     try:
         if not logged_in(request):
-            print("jiiiiii")
             data = request.GET["data"]
             fernet = Fernet(iframe)
             data = fernet.decrypt(data.encode()).decode()

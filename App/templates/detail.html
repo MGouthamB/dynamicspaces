@@ -1156,7 +1156,7 @@
                     APPLICATION FORM</h5>
 
                 <!-- Floating Labels Form -->
-                <form class="row g-3" method="post" action="dynamicspace-form" enctype="multipart/form-data">
+                <form class="row g-3" method="post" action="dynamicspace-form?data={{ request.GET.data }}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="col-md-12">
                         <div class="form-floating">
