@@ -7,6 +7,9 @@ import datetime
 import requests
 from django import template
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.html import strip_tags
 
 register = template.Library()
 client_id = 'AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2S7LCHGu-b6umZ'
@@ -14,6 +17,462 @@ client_key = 'EI9D1G-ilWpyvJYesga2b3s13lqk53h3QSjsVY6UMhYqz29ZloMiRouTwFM82obO16
 
 iframe = 'ET-fOTwEB78NHvQF2wGouthaMjg5uYMT-MrpDnKrq8c='
 
+message1 ='''<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <title></title>
+    <style type="text/css" rel="stylesheet" media="all">
+        /* Base ------------------------------ */
+
+        @import url("https://fonts.googleapis.com/css?family=Nunito+Sans:400,700&display=swap");
+
+        body {
+            width: 100% !important;
+            height: 100%;
+            margin: 0;
+            -webkit-text-size-adjust: none;
+        }
+
+        a {
+            color: #3869D4;
+        }
+
+        a img {
+            border: none;
+        }
+
+        td {
+            word-break: break-word;
+        }
+
+        .preheader {
+            display: none !important;
+            visibility: hidden;
+            mso-hide: all;
+            font-size: 1px;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        /* Type ------------------------------ */
+
+        body,
+        td,
+        th {
+            font-family: "Nunito Sans", Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #333333;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333333;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        td,
+        th {
+            font-size: 16px;
+        }
+
+        p,
+        ul,
+        ol,
+        blockquote {
+            margin: .4em 0 1.1875em;
+            font-size: 16px;
+            line-height: 1.625;
+        }
+
+        p.sub {
+            font-size: 13px;
+        }
+
+        /* Utilities ------------------------------ */
+
+        .align-right {
+            text-align: right;
+        }
+
+        .align-left {
+            text-align: left;
+        }
+
+        .align-center {
+            text-align: center;
+        }
+
+        /* Buttons ------------------------------ */
+
+        .button {
+            background-color: #22BC66;
+            border-top: 10px solid #22BC66;
+            border-right: 18px solid #22BC66;
+            border-bottom: 10px solid #22BC66;
+            border-left: 18px solid #22BC66;
+            display: inline-block;
+            color: #FFF;
+            text-decoration: none;
+            border-radius: 3px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
+            -webkit-text-size-adjust: none;
+            box-sizing: border-box;
+        }
+
+        .button--green {
+            background-color: #3869D4;
+            border-top: 10px solid #3869D4;
+            border-right: 18px solid #3869D4;
+            border-bottom: 10px solid #3869D4;
+            border-left: 18px solid #3869D4;
+        }
+
+        .button--red {
+            background-color: #FF6136;
+            border-top: 10px solid #FF6136;
+            border-right: 18px solid #FF6136;
+            border-bottom: 10px solid #FF6136;
+            border-left: 18px solid #FF6136;
+        }
+
+        @media only screen and (max-width: 500px) {
+            .button {
+                width: 100% !important;
+                text-align: center !important;
+            }
+        }
+
+        /* Attribute list ------------------------------ */
+
+        .attributes {
+            margin: 0 0 21px;
+        }
+
+        .attributes_content {
+            background-color: #F4F4F7;
+            padding: 16px;
+        }
+
+        .attributes_item {
+            padding: 0;
+        }
+
+        /* Related Items ------------------------------ */
+
+        .related {
+            width: 100%;
+            margin: 0;
+            padding: 25px 0 0 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        .related_item {
+            padding: 10px 0;
+            color: #CBCCCF;
+            font-size: 15px;
+            line-height: 18px;
+        }
+
+        .related_item-title {
+            display: block;
+            margin: .5em 0 0;
+        }
+
+        .related_item-thumb {
+            display: block;
+            padding-bottom: 10px;
+        }
+
+        .related_heading {
+            border-top: 1px solid #CBCCCF;
+            text-align: center;
+            padding: 25px 0 10px;
+        }
+
+        /* Discount Code ------------------------------ */
+
+        .discount {
+            width: 100%;
+            margin: 0;
+            padding: 24px;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #F4F4F7;
+            border: 2px dashed #CBCCCF;
+        }
+
+        .discount_heading {
+            text-align: center;
+        }
+
+        .discount_body {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        /* Social Icons ------------------------------ */
+
+        .social {
+            width: auto;
+        }
+
+        .social td {
+            padding: 0;
+            width: auto;
+        }
+
+        .social_icon {
+            height: 20px;
+            margin: 0 8px 10px 8px;
+            padding: 0;
+        }
+
+        /* Data table ------------------------------ */
+
+        .purchase {
+            width: 100%;
+            margin: 0;
+            padding: 35px 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        .purchase_content {
+            width: 100%;
+            margin: 0;
+            padding: 25px 0 0 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        .purchase_item {
+            padding: 10px 0;
+            color: #51545E;
+            font-size: 15px;
+            line-height: 18px;
+        }
+
+        .purchase_heading {
+            padding-bottom: 8px;
+            border-bottom: 1px solid #EAEAEC;
+        }
+
+        .purchase_heading p {
+            margin: 0;
+            color: #85878E;
+            font-size: 12px;
+        }
+
+        .purchase_footer {
+            padding-top: 15px;
+            border-top: 1px solid #EAEAEC;
+        }
+
+        .purchase_total {
+            margin: 0;
+            text-align: right;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .purchase_total--label {
+            padding: 0 15px 0 0;
+        }
+
+        body {
+            background-color: #F4F4F7;
+            color: #51545E;
+        }
+
+        p {
+            color: #51545E;
+        }
+
+        p.sub {
+            color: #6B6E76;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #F4F4F7;
+        }
+
+        .email-content {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        /* Masthead ----------------------- */
+
+        .email-masthead {
+            padding: 25px 0;
+            text-align: center;
+        }
+
+        .email-masthead_logo {
+            width: 94px;
+        }
+
+        .email-masthead_name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #A8AAAF;
+            text-decoration: none;
+            text-shadow: 0 1px 0 white;
+        }
+
+        /* Body ------------------------------ */
+
+        .email-body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #FFFFFF;
+        }
+
+        .email-body_inner {
+            width: 570px;
+            margin: 0 auto;
+            padding: 0;
+            -premailer-width: 570px;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #FFFFFF;
+        }
+
+        .email-footer {
+            width: 570px;
+            margin: 0 auto;
+            padding: 0;
+            -premailer-width: 570px;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            text-align: center;
+        }
+
+        .email-footer p {
+            color: #6B6E76;
+        }
+
+        .body-action {
+            width: 100%;
+            margin: 30px auto;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            text-align: center;
+        }
+
+        .body-sub {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #EAEAEC;
+        }
+
+        .content-cell {
+            padding: 35px;
+        }
+
+        /*Media Queries ------------------------------ */
+
+        @media only screen and (max-width: 600px) {
+
+            .email-body_inner,
+            .email-footer {
+                width: 100% !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            body,
+            .email-body,
+            .email-body_inner,
+            .email-content,
+            .email-wrapper,
+            .email-masthead,
+            .email-footer {
+                background-color: #333333 !important;
+                color: #FFF !important;
+            }
+
+            p,
+            ul,
+            ol,
+            blockquote,
+            h1,
+            h2,
+            h3 {
+                color: #FFF !important;
+            }
+
+            .attributes_content,
+            .discount {
+                background-color: #222 !important;
+            }
+
+            .email-masthead_name {
+                text-shadow: none !important;
+            }
+        }
+
+        :root {
+            color-scheme: light dark;
+            supported-color-schemes: light dark;
+        }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+      .f-fallback  {
+        font-family: Arial, sans-serif;
+      }
+    </style>
+  <![endif]-->
+</head>'''
 
 def get_access_token():
     data = {
@@ -299,13 +758,13 @@ def postdetail(request):
                 raise Exception
 
             job = Jobs.objects.get(id=request.GET['job'], posted_by=email)
-            return render(request, "detail.html", {"job": job})
+            return render(request, "detail.html", {"job": job,"msg": message_check(request)})
 
         except Exception as e:
             return HttpResponseRedirect('404')
     job = Jobs.objects.get(id=request.GET['job'], posted_by=request.session['email'])
     # job.time = tim
-    return render(request, "detail.html", {"job": job})
+    return render(request, "detail.html", {"job": job,"msg": message_check(request)})
 
 
 def charts_apexcharts(request):
@@ -520,3 +979,281 @@ def change_password(request):
         request.session[
             'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> There is an error changing password<br>Please try again or Contact us</b>'
         return HttpResponseRedirect(request, "users-profile")
+
+def dynamicspace_form(request):
+    try:
+        if not logged_in(request):
+            print("jiiiiii")
+            data = request.GET["data"]
+            fernet = Fernet(iframe)
+            data = fernet.decrypt(data.encode()).decode()
+
+            email,password = data.split("~")
+
+            profile = Profiles.objects.get(email=email)
+
+            if not payment_check(request,id=profile.subscriber_id,email=email):
+                raise Exception
+
+
+            if profile.subscriber==False:
+                raise Exception
+
+
+            fernet = Fernet(profile.key.encode('utf-8'))
+
+
+            if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
+                raise Exception
+
+        job = Jobs.objects.get(id=request.POST['jobid'])
+        POSTdata=""
+        for i in request.POST.items():
+            if i[0]=="csrfmiddlewaretoken":continue
+            POSTdata+="<b>"+i[0].capitalize()+"</b>:"+i[1]+"<br>"
+
+        file = Files()
+        file.file = request.FILES['resume']
+        file.save()
+        employee = f'''
+
+                    <body>
+                        <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td align="center">
+                                    <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                        <tr>
+                                            <td class="email-masthead">
+                                                <a href="" class="f-fallback email-masthead_name">
+                                                    <img src="{job.logo_img_url}" width="auto" />
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <!-- Email Body -->
+                                        <tr>
+                                            <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                                                <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                    role="presentation">
+                                                    <!-- Body content -->
+                                                    <tr>
+                                                        <td class="content-cell">
+                                                            <div class="f-fallback">
+                                                                <h1>Hello {request.POST['name']},</h1>
+                                                                <p>Application acknowledgment for {job.title} at {job.company}</p>
+                                                                <!-- Action -->
+                                                                <table class="attributes" width="100%" cellpadding="0" cellspacing="0"
+                                                                    role="presentation">
+                                                                    <tr>
+                                                                        <td class="attributes_content">
+                                                                            <table width="100%" cellpadding="0" cellspacing="0"
+                                                                                role="presentation">
+                                                                                <tr>
+                                                                                    <td class="attributes_item">
+                                                                                        Thank you for providing the information. This mail is an acknowledgement that we have received your data.
+                                                                                    </td>
+                                                                                </tr>
+
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+
+                                                                <table class="body-action" align="center" width="100%" cellpadding="0"
+                                                                    cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <!-- Border based button
+                               https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
+                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                                                role="presentation">
+                                                                                <tr>
+                                                                                    <td align="center">
+                                                                                        <a href="{request.META.get('HTTP_REFERER')}"
+                                                                                            class="f-fallback button" target="_blank">Visit
+                                                                                            Website</a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+
+                                                                <p>If you have any questions, feel free to <a
+                                                                        href="mailto:{job.eemail}">Contact the mail address of the
+                                                                        sender</a>. (Click on the link to contact)</p>
+                                                                <p>Thanks,
+                                                                    <br>Team {job.company}
+                                                                </p>
+
+                                                                <!-- Sub copy -->
+                                                                <table class="body-sub" role="presentation" align="center">
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <p class="f-fallback sub"><strong>Mail generated by </strong><a
+                                                                                    href="https://groziit.com"><img
+                                                                                        src="https://i.imgur.com/OUzZa5Z.png"
+                                                                                        style="width: 60px;" /></a></p>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                    role="presentation">
+                                                    <tr>
+                                                        <td class="content-cell" align="center">
+                                                            <p class="f-fallback sub align-center">&copy; Copyright {job.company}. All Rights
+                                                                Reserved</p>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+
+                    </html>'''
+        employer = f'''<body>
+                    <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                        <tr>
+                            <td align="center">
+                                <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                    <tr>
+                                        <td class="email-masthead">
+                                            <a href="{request.META.get('HTTP_REFERER')}" class="f-fallback email-masthead_name">
+                                                <img src="{job.logo_img_url}" width="auto" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <!-- Email Body -->
+                                    <tr>
+                                        <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                                            <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                role="presentation">
+                                                <!-- Body content -->
+                                                <tr>
+                                                    <td class="content-cell">
+                                                        <div class="f-fallback">
+                                                            <h1>Welcome, {job.company}</h1>
+                                                            <p>New Job Application submitted for for {job.title} at {job.company}</p>
+                                                            <!-- Action -->
+                                                            <table class="attributes" width="100%" cellpadding="0" cellspacing="0"
+                                                                role="presentation">
+                                                                <tr>
+                                                                    <td class="attributes_content">
+                                                                        <table width="100%" cellpadding="0" cellspacing="0"
+                                                                            role="presentation">
+                                                                            <tr>
+                                                                                <td class="attributes_item">
+                                                                                    <span class="f-fallback">
+                                                                                    {POSTdata} <br/>
+                                                                                    <strong>File Link:</strong> {request.build_absolute_uri(file.file.url)}
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <table class="body-action" align="center" width="100%" cellpadding="0"
+                                                                cellspacing="0" role="presentation">
+                                                                <tr>
+                                                                    <td align="center">
+                                                                        <!-- Border based button
+                           https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
+                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                                            role="presentation">
+                                                                            <tr>
+                                                                                <td align="center">
+                                                                                    <a href="https://groziit.pythonanywhere.com/"
+                                                                                        class="f-fallback button" target="_blank">Visit
+                                                                                        Website</a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <p>If you have any questions, feel free to <a
+                                                                    href="mailto:contact@groziit.com">Contact the mail address of the
+                                                                    sender</a>. (Click on the link to contact)</p>
+                                                            <p>Thanks,
+                                                                <br>Team GROZiiT
+                                                            </p>
+
+                                                            <!-- Sub copy -->
+                                                            <table class="body-sub" role="presentation" align="center">
+                                                                <tr>
+                                                                    <td align="center">
+                                                                        <p class="f-fallback sub"><strong>Mail generated by </strong><a
+                                                                                href="https://groziit.com"><img
+                                                                                    src="https://i.imgur.com/OUzZa5Z.png"
+                                                                                    style="width: 60px;" /></a></p>
+
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                role="presentation">
+                                                <tr>
+                                                    <td class="content-cell" align="center">
+                                                        <p class="f-fallback sub align-center">&copy; Copyright GROZiiT. All Rights
+                                                            Reserved</p>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+
+                </html>'''
+
+        send_mail(
+            subject='Thanks for Applying',
+            html_message=message1 + employee,
+            message=strip_tags(message1 + employee),
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[request.POST['email'].lower()])
+        send_mail(
+            subject='New job Application submitted',
+            html_message=message1 + employer,
+            message=strip_tags(message1 + employer),
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[job.eemail.lower()])
+        request.session[
+            'message'] = '<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted the Job Application!</b>'
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    except Exception as e:
+        print(e)
+        request.session[
+            'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i>There is an error submitting the job<br>Please try again!!</b>'
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+

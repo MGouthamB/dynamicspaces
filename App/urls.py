@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 
 from . import views
 
@@ -50,5 +52,7 @@ urlpatterns = [
     path('users-profile', views.users_profile, name="users-profile"),
     path('edit-profile', views.edit_profile, name="edit_profile"),
     path('change-password', views.change_password, name="change-password"),
+    path('dynamicspace-form',views.dynamicspace_form,name="dynamicspace-form")
     # path('dynamicspace', views.)
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

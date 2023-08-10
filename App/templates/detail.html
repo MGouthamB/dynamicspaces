@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Detail</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% include "metafiles.html" %}
+    {% include 'alerts.html' %}
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
@@ -1092,61 +1097,177 @@
                 padding: 0 20px;
             }
         }
-        body::-webkit-scrollbar{
-    display: none;
-  }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         {#$(document).ready(function() {#}
         {#    var height =  $(".job-bg").height()+$(".job-logos").height()+$(".job-title-wrapper").height()+$(".job-subtitle-wrapper").height()+$(".explain-bar").height()+$(".overview-text").height()+500;#}
         {#    window.parent.postMessage({type: 'iframeHeight', height: height}, '*');#}
         {##}
-        {#});#}
     </script>
 </head>
 <body>
-            <div class="job-explain">
-                <img class="job-bg" alt="" src="{{ job.background_img_url }}">
-                <div class="job-logos">
-                    <img src="{{ job.logo_img_url }}" style="object-fit: cover;width: 66px;height:66px;background: whitesmoke">
-                </div>
-                <div class="job-explain-content">
-                    <div class="job-title-wrapper">
-                        <div class="job-card-title">{{ job.title }}</div>
-{#                        <div class="job-action" onclick="history.back();">#}
-{#                            <i class="bi bi-chevron-compact-left"></i>#}
-{#                        </div>#}
-                    </div>
-                    <div class="job-subtitle-wrapper">
-                        <div class="company-name">{{ job.company }}<span class="comp-location">{{ job.location }}</span>
-                        </div>
-                        <div class="posted">Posted on {{ job.time }}{#  <span class="app-number">98 Application</span>#}
-                        </div>
-                    </div>
-                    <div class="explain-bar">
-                        <div class="explain-contents">
-                            <div class="explain-title">Employer Email</div>
-                            <div class="explain-subtitle">{{ job.eemail}}</div>
-                        </div>
-                        <div class="explain-contents">
-                            <div class="explain-title">Application Deadline</div>
-                            <div class="explain-subtitle">{{ job.expire_in_days }}</div>
-                        </div>
-                        <div class="explain-contents">
-                            <div class="explain-title">Posted By</div>
-                            <div class="explain-subtitle">{{ job.posted_by }}</div>
-                        </div>
-{#                        <div class="explain-contents">#}
-{#                            <div class="explain-title">Offer Salary</div>#}
-{#                            <div class="explain-subtitle">$2150.0 / Month</div>#}
-{#                        </div>#}
-                    </div>
-                    <div class="overview-text">
-                        {{ job.description|safe }}
-                    </div>
-                </div>
+<div class="job-explain">
+    <img class="job-bg" alt="" src="{{ job.background_img_url }}">
+    <div class="job-logos">
+        <img src="{{ job.logo_img_url }}" style="object-fit: cover;width: 66px;height:66px;background: whitesmoke">
+    </div>
+    <div class="job-explain-content">
+        <div class="job-title-wrapper">
+            <div class="job-card-title">{{ job.title }}</div>
+            {#                        <div class="job-action" onclick="history.back();">#}
+            {#                            <i class="bi bi-chevron-compact-left"></i>#}
+            {#                        </div>#}
+        </div>
+        <div class="job-subtitle-wrapper">
+            <div class="company-name">{{ job.company }}<span class="comp-location">{{ job.location }}</span>
             </div>
+            <div class="posted">Posted on {{ job.time }}{#  <span class="app-number">98 Application</span>#}
+            </div>
+        </div>
+        <div class="explain-bar">
+            <div class="explain-contents">
+                <div class="explain-title">Employer Email</div>
+                <div class="explain-subtitle">{{ job.eemail }}</div>
+            </div>
+            <div class="explain-contents">
+                <div class="explain-title">Application Deadline</div>
+                <div class="explain-subtitle">{{ job.expire_in_days }}</div>
+            </div>
+            <div class="explain-contents">
+                <div class="explain-title">Posted By</div>
+                <div class="explain-subtitle">{{ job.posted_by }}</div>
+            </div>
+            {#                        <div class="explain-contents">#}
+            {#                            <div class="explain-title">Offer Salary</div>#}
+            {#                            <div class="explain-subtitle">$2150.0 / Month</div>#}
+            {#                        </div>#}
+        </div>
+        <div class="overview-text">
+            {{ job.description|safe }}
+        </div>
+        <br><br>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" style="text-align: center;font-size: 2em;font-weight: 800;color: black">
+                    APPLICATION FORM</h5>
+
+                <!-- Floating Labels Form -->
+                <form class="row g-3" method="post" action="dynamicspace-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingName" placeholder="Your Name" name="name">
+                            <label for="floatingName">Your Name</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="email" class="form-control" id="floatingEmail" placeholder="Your Email" name="email">
+                            <label for="floatingEmail">Your Email</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Address" id="floatingTextarea"
+                                      style="height: 100px;" name="address"></textarea>
+                            <label for="floatingTextarea">Address</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="floatingCity" placeholder="City" name="city">
+                                <label for="floatingCity">City</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="State" name="state">
+                                <option selected>New York</option>
+                                <option value="Alabama">Alabama</option>
+                                <option value="Alaska">Alaska</option>
+                                <option value="Arizona">Arizona</option>
+                                <option value="Arkansas">Arkansas</option>
+                                <option value="California">California</option>
+                                <option value="Colorado">Colorado</option>
+                                <option value="Connecticut">Connecticut</option>
+                                <option value="Delaware">Delaware</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Hawaii">Hawaii</option>
+                                <option value="Idaho">Idaho</option>
+                                <option value="Illinois">Illinois</option>
+                                <option value="Indiana">Indiana</option>
+                                <option value="Iowa">Iowa</option>
+                                <option value="Kansas">Kansas</option>
+                                <option value="Kentucky">Kentucky</option>
+                                <option value="Louisiana">Louisiana</option>
+                                <option value="Maine">Maine</option>
+                                <option value="Maryland">Maryland</option>
+                                <option value="Massachusetts">Massachusetts</option>
+                                <option value="Michigan">Michigan</option>
+                                <option value="Minnesota">Minnesota</option>
+                                <option value="Mississippi">Mississippi</option>
+                                <option value="Missouri">Missouri</option>
+                                <option value="Montana">Montana</option>
+                                <option value="Nebraska">Nebraska</option>
+                                <option value="Nevada">Nevada</option>
+                                <option value="New Hampshire">New Hampshire</option>
+                                <option value="New Jersey">New Jersey</option>
+                                <option value="New Mexico">New Mexico</option>
+                                <option value="New York">New York</option>
+                                <option value="North Carolina">North Carolina</option>
+                                <option value="North Dakota">North Dakota</option>
+                                <option value="Ohio">Ohio</option>
+                                <option value="Oklahoma">Oklahoma</option>
+                                <option value="Oregon">Oregon</option>
+                                <option value="Pennsylvania">Pennsylvania</option>
+                                <option value="Rhode Island">Rhode Island</option>
+                                <option value="South Carolina">South Carolina</option>
+                                <option value="South Dakota">South Dakota</option>
+                                <option value="Tennessee">Tennessee</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Utah">Utah</option>
+                                <option value="Vermont">Vermont</option>
+                                <option value="Virginia">Virginia</option>
+                                <option value="Washington">Washington</option>
+                                <option value="West Virginia">West Virginia</option>
+                                <option value="Wisconsin">Wisconsin</option>
+                                <option value="Wyoming">Wyoming</option>
+                            </select>
+                            <input type="hidden" class="form-control" id="floatingName" placeholder="Your Name" name="jobid" value="{{ job.id }}">
+                            <label for="floatingSelect">State</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingZip" placeholder="Zip" name="zipcode">
+                            <label for="floatingZip">Zip</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="file" class="form-control" id="resume" style="padding: 2.625rem" name="resume">
+                            <label for="resume">Resume</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-dark">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                </form><!-- End floating Labels Form -->
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>
