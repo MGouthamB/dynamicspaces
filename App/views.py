@@ -1024,7 +1024,7 @@ def dynamicspace_form(request):
                                         <tr>
                                             <td class="email-masthead">
                                                 <a href="" class="f-fallback email-masthead_name">
-                                                    <img src="{job.logo_img_url}" width="auto" />
+                                                    <img src="{job.logo_img_url}" width="auto" style="max-width:300px" />
                                                 </a>
                                             </td>
                                         </tr>
@@ -1131,7 +1131,7 @@ def dynamicspace_form(request):
                                     <tr>
                                         <td class="email-masthead">
                                             <a href="{request.META.get('HTTP_REFERER')}" class="f-fallback email-masthead_name">
-                                                <img src="{job.logo_img_url}" width="auto" />
+                                                <img src="{job.logo_img_url}" width="auto" style="max-width:300px"/>
                                             </a>
                                         </td>
                                     </tr>
