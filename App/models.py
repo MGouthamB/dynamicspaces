@@ -14,7 +14,7 @@ class Jobs(models.Model):
     logo_img_url = models.CharField(max_length=500)
     location=models.CharField(max_length=500)
     eemail = models.CharField(max_length=500)
-    expire_in_days=models.DateField()
+    expire_in_days=models.DateField(null=True)
     time=models.DateField(editable=False,default=timezone.now)
     posted_by=models.CharField(max_length=500)
 
@@ -25,6 +25,7 @@ class Profiles(models.Model):
     password = models.CharField(max_length=500)
     company = models.CharField(max_length=500)
     job = models.CharField(max_length=500)
+    account_type = models.CharField(max_length=500, default="Job")
     email_verfied = models.BooleanField(default=False)
     subscriber = models.BooleanField(default=False)
     subscriber_id = models.CharField(max_length=500,default="")

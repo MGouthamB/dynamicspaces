@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    {% include 'alerts.html' %}
 </head>
 
 <body>
@@ -27,11 +29,11 @@
 <main id="main" class="main">
 
     <div class="Jobposting">
-        <h1>Add Job Posting</h1>
+        <h1>Add {{ actype }}</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index">Home</a></li>
-                <li class="breadcrumb-item active">Add Posting</li>
+                <li class="breadcrumb-item active">Add {{ actype }}</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -57,7 +59,7 @@
                     {#                            </div>#}
                     {#                        </div>#}
                     {#                    </div>#}
-
+                    {% if actype == "Job" %}
                     <div class="row mb-3">
                         <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Title</label>
                         <div class="col-md-8 col-lg-9">
@@ -136,6 +138,31 @@
                             <input name="expire_in_days" type="date" class="form-control" id="expire_in_days" value="">
                         </div>
                     </div>
+                    {% endif %}
+
+                    {% if actype == "Form" %}
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Form Title</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="title" type="text" class="form-control" id="title" value="" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="about" class="col-md-4 col-lg-3 col-form-label">Form Data</label>
+                            <div class="col-md-8 col-lg-9">
+                                <div id="toolbar-container">
+                                    <textarea name="ckdescription" id="ckdescription"
+                                              style="border: 1px solid #ced4da;border-radius: 0.375rem;"></textarea>
+                                    <input name="description" id="description" type="hidden">
+                                    <script>
+                                        CKEDITOR.replace('ckdescription');
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    {% endif %}
 
 
                     <div class="text-center">
