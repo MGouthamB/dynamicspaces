@@ -13,15 +13,17 @@
         <li class="nav-item">
             <a class="nav-link collapsed item2" id="posting" href="add-post">
                 <i class="bi bi-plus-square"></i>
-                <span>Add Job Posting</span>
+                <span>Add {{ actype }}</span>
             </a>
         </li>
+    {% if actype == "Job" %}
         <li class="nav-item">
             <a class="nav-link collapsed item3" id="postview" href="GroziitDynamicSpace">
                 <i class="bi bi-view-list"></i>
                 <span>View Job Posting</span>
             </a>
         </li>
+    {% endif %}
         <!-- End Dashboard Nav -->
 
 

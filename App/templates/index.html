@@ -58,9 +58,9 @@
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">Job Postings<span></span></h5>
+                  <h5 class="card-title">{{ actype }} Postings<span></span></h5>
 
-
+                {% if actype == "Job" %}
                   <table class="table table-borderless datatable">
                     <thead>
                       <tr>
@@ -85,6 +85,32 @@
                     {% endfor %}
                     </tbody>
                   </table>
+                {% endif %}
+
+                {% if actype == "Form" %}
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#ID</th>
+                        <th scope="col">Title</th>
+                          <th>View</th>
+                          <th scope="col">Edit</th>
+                      </tr>
+                    </thead>
+                    <tbody class="jobs_list">
+                    {% for i in jobs %}
+                      <tr>
+                        <th scope="row"><a href="edit-post?id={{ i.id }}">#{{ i.id }}</a></th>
+                        <td >{{ i.title }}</td>
+                          <td style="align-content: center"><a href="GroziitFromview?id={{ i.id }}" class="text-primary" style="align-content: center;display: block"><i class="bi bi-eye text-primary" ></i></a></td>
+                          <td style="align-content: center"><a href="edit-post?id={{ i.id }}" class="text-primary"><i class="bi bi-pencil-square text-primary" ></i></a></td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                    I-4EB73AKDHRL5
+                {% endif %}
+
                 </div>
 
               </div>

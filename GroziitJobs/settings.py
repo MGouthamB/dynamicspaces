@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'App',
     'ckeditor',
+    'gdstorage',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'groziit001@gmail.com'
 EMAIL_HOST_PASSWORD = 'yhiqtdvlqqfwlkmg'
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = os.path.join(BASE_DIR, "GroziitJobs/googledrive.json")
+GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = 'https://drive.google.com/drive/folders/1IYWFPztxqdneoALp41LeC4qT6BVBRKXK'
