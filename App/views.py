@@ -10,7 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
-from gdstorage.storage import GoogleDriveStorage
+# from gdstorage.storage import GoogleDriveStorage
 
 register = template.Library()
 client_id = 'AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2S7LCHGu-b6umZ'
@@ -1186,18 +1186,18 @@ def dynamicspace_form(request):
                 message=strip_tags(message1 + employer),
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[job.eemail.lower()])
-        if profile.account_type == "Form":
-            # Get the file from the request
-            file = request.FILES['files']
+        # if profile.account_type == "Form":
+        #     # Get the file from the request
+        #     file = request.FILES['files']
+        #
+        #     # Upload the file to Google Drive
+        #     storage = GoogleDriveStorage()
+        #     file_path = storage.save(file.name, file)
+        #
+        #     # Get the link to the file in Google Drive
+        #     file_url = storage.url(file_path)
 
-            # Upload the file to Google Drive
-            storage = GoogleDriveStorage()
-            file_path = storage.save(file.name, file)
-
-            # Get the link to the file in Google Drive
-            file_url = storage.url(file_path)
-
-            print(file_url)
+            # print(file_url)
         request.session[
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted the {profile.account_type} Application!</b>'
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
