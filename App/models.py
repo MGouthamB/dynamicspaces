@@ -17,6 +17,7 @@ class Jobs(models.Model):
     expire_in_days=models.DateField(null=True)
     time=models.DateField(editable=False,default=timezone.now)
     posted_by=models.CharField(max_length=500)
+    need_files = models.BooleanField(default=False)
 
 class Profiles(models.Model):
     name = models.CharField(max_length=500)
@@ -35,3 +36,9 @@ class Profiles(models.Model):
 
 class Files(models.Model):
     file = models.FileField(upload_to='files')
+
+class FormData(models.Model):
+    data = models.CharField(max_length=2000)
+    posted_for = models.CharField(max_length=500)
+    time = models.DateField(editable=False, default=timezone.now)
+    form_name = models.CharField(max_length=500)

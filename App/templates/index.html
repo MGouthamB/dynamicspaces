@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - GroziitJobs Bootstrap Template</title>
+  <title>Dashboard - DynamicSpaces Bootstrap Template</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -93,6 +93,7 @@
                       <tr>
                         <th scope="col">#ID</th>
                         <th scope="col">Title</th>
+                          <th scope="col">IframeLink</th>
                           <th>View</th>
                           <th scope="col">Edit</th>
                       </tr>
@@ -102,13 +103,13 @@
                       <tr>
                         <th scope="row"><a href="edit-post?id={{ i.id }}">#{{ i.id }}</a></th>
                         <td >{{ i.title }}</td>
+                          <td style="align-content: center"><a href="GroziitFromview?data={{ i_frame }}&id={{ i.id }}" class="text-primary" style="align-content: center;display: block"><i class="bi bi-link text-primary" ></i></a></td>
                           <td style="align-content: center"><a href="GroziitFromview?id={{ i.id }}" class="text-primary" style="align-content: center;display: block"><i class="bi bi-eye text-primary" ></i></a></td>
                           <td style="align-content: center"><a href="edit-post?id={{ i.id }}" class="text-primary"><i class="bi bi-pencil-square text-primary" ></i></a></td>
                       </tr>
                     {% endfor %}
                     </tbody>
                   </table>
-                    I-4EB73AKDHRL5
                 {% endif %}
 
                 </div>
@@ -258,19 +259,85 @@
       </div>
     </section>
 
+  </main><!-- End #main1 -->
+
+{% if actype == "Form" %}
+  <main id="main" class="main" style="margin-top: 0">
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Datatables</h5>
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">#ID</th>
+                    <th scope="col">Form Name</th>
+                    <th scope="col">View</th>
+                    <th scope="col">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for i in datas %}
+                  <tr>
+                    <th scope="row">{{ i.id }}</th>
+                    <td>{{ i.form_name}}</td>
+                    <td style="align-content: center"><i class="bi bi-eye text-primary dataview" style="cursor: pointer" onclick="view('{{ i.data }}','{{ i.form_name }}')"></i></td>
+                    <td>{{ i.time|date:"Y-m-d"}}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+            <div class="modal fade" id="verticalycentered" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="modal-title">Data</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="view_body">
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+{#                              <button type="button" class="btn btn-primary">Close</button>#}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
   </main><!-- End #main -->
+{% endif %}
 
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
-      &copy; Copyright <strong><span>GroziitJobs</span></strong>. All Rights Reserved
+      &copy; Copyright <strong><span>DynamicSpaces</span></strong>. All Rights Reserved
     </div>
     
   </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 {% include "footer-meta-files.html" %}
-
+<script>
+    function view(data,title)
+        {
+            $("#modal-title").html("Form Name: "+title);
+            $("#view_body").html(data);
+            $("#verticalycentered").modal('show');
+        }
+</script>
 
 </body>
 

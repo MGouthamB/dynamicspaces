@@ -134,12 +134,12 @@
                         </div>
                     </div>
 
-{#                    <div class="row mb-3">#}
-{#                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date</label>#}
-{#                        <div class="col-md-8 col-lg-9">#}
-{#                            <input name="expire_in_days" type="date" class="form-control" id="expire_in_days" value="{{ job.expire_in_days }}">#}
-{#                        </div>#}
-{#                    </div>#}
+                    <div class="row mb-3">
+                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date</label>
+                        <div class="col-md-8 col-lg-9">
+                            <input name="expire_in_days" type="date" class="form-control" id="expire_in_days" value="{{ job.expire_in_days|date:"Y-m-d" }}">
+                        </div>
+                    </div>
                     {% endif %}
 
                     {% if actype == "Form" %}
@@ -148,6 +148,16 @@
                             <label for="fullName" class="col-md-4 col-lg-3 col-form-label">{{ actype }} Title</label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 col-lg-3 col-form-label">Need Files</label>
+                            <div class="col-md-8 col-lg-9">
+                                <select class="form-select" aria-label="Default select example" name="needfiles" >
+                                    <option value="Yes" {% if job.need_files %}selected{% endif %}>Yes</option>
+                                    <option value="No" {% if not job.need_files %}selected{% endif %}>No</option>
+                                </select>
                             </div>
                         </div>
 

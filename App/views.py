@@ -10,6 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
+
 # from gdstorage.storage import GoogleDriveStorage
 
 register = template.Library()
@@ -631,10 +632,18 @@ def index(request):
 
     profile = Profiles.objects.get(email=request.session['email'])
 
+    iframe_data = ""
+    if profile.account_type == "Form":
+        fernet = Fernet(iframe)
+        iframe_data = request.session["email"] + "~" + request.session["password"]
+        iframe_data = fernet.encrypt(iframe_data.encode()).decode('utf-8')
+
     jobs = Jobs.objects.filter(posted_by=request.session['email'])
+    datas = FormData.objects.filter(posted_for=request.session['email'])
     return render(request, "index.html",
-                  {'jobs': jobs, 'username': profile.username, 'role': profile.job,
-                   "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type})
+                  {'jobs': jobs,'datas':datas, 'username': profile.username, 'role': profile.job,
+                   "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,
+                   "i_frame": iframe_data})
 
 
 def add_post(request):
@@ -676,6 +685,8 @@ def adding_job(request):
             job.expire_in_days = request.POST['expire_in_days']
             job.background_img_url = request.POST['background_img_url']
             job.keywords = request.POST['keywords']
+        elif profile.account_type == "Form":
+            job.need_files = request.POST['needfiles'] == "Yes"
         job.save()
         request.session[
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully added the {profile.account_type}!</b>'
@@ -701,9 +712,11 @@ def editing_job(request):
             job.eemail = request.POST['eemail']
             job.company = request.POST['company']
             job.logo_img_url = request.POST['logo_img_url']
-            # job.expire_in_days = request.POST['expire_in_days']
+            job.expire_in_days = request.POST['expire_in_days']
             job.background_img_url = request.POST['background_img_url']
             job.keywords = request.POST['keywords']
+        elif profile.account_type == "Form":
+            job.need_files = request.POST['needfiles'] == "Yes"
         job.save()
         request.session[
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully edited the {profile.account_type}!</b>'
@@ -780,6 +793,7 @@ def postdetail(request):
     # job.time = tim
     return render(request, "detail.html", {"job": job, "msg": message_check(request)})
 
+
 @xframe_options_exempt
 def GroziitFromview(request):
     if not logged_in(request):
@@ -803,18 +817,17 @@ def GroziitFromview(request):
             if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
                 raise Exception
 
-            if profile.account_type!="Form":
+            if profile.account_type != "Form":
                 raise Exception
 
-            job = Jobs.objects.get(id=request.GET['job'], posted_by=email)
-            return render(request, "detail.html", {"job": job, "msg": message_check(request)})
+            form = Jobs.objects.get(id=request.GET['id'], posted_by=email)
+            return render(request, "GroziitFromView.html", {"form": form, "msg": message_check(request)})
 
         except Exception as e:
             return HttpResponseRedirect('404')
     form = Jobs.objects.get(id=request.GET['id'], posted_by=request.session['email'])
     # job.time = tim
     return render(request, "GroziitFromView.html", {"form": form, "msg": message_check(request)})
-
 
 
 def pages_login(request):
@@ -920,7 +933,7 @@ def change_password(request):
 
 def dynamicspace_form(request):
     try:
-        email=""
+        email = ""
         if not logged_in(request):
             data = request.GET["data"]
             fernet = Fernet(iframe)
@@ -944,12 +957,12 @@ def dynamicspace_form(request):
             email = request.session['email']
 
         profile = Profiles.objects.get(email=email)
-        if profile.account_type=="Job":
+        POSTdata = ""
+        for i in request.POST.items():
+            if i[0] in ["csrfmiddlewaretoken","formname"]: continue
+            POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
+        if profile.account_type == "Job":
             job = Jobs.objects.get(id=request.POST['jobid'])
-            POSTdata = ""
-            for i in request.POST.items():
-                if i[0] == "csrfmiddlewaretoken": continue
-                POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
 
             file = Files()
             file.file = request.FILES['resume']
@@ -1186,7 +1199,12 @@ def dynamicspace_form(request):
                 message=strip_tags(message1 + employer),
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[job.eemail.lower()])
-        # if profile.account_type == "Form":
+        if profile.account_type == "Form":
+            data = FormData()
+            data.data=POSTdata
+            data.posted_for = email
+            data.form_name = request.POST['formname']
+            data.save()
         #     # Get the file from the request
         #     file = request.FILES['files']
         #
@@ -1197,7 +1215,7 @@ def dynamicspace_form(request):
         #     # Get the link to the file in Google Drive
         #     file_url = storage.url(file_path)
 
-            # print(file_url)
+        # print(file_url)
         request.session[
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted the {profile.account_type} Application!</b>'
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

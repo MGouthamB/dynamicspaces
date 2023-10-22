@@ -1113,7 +1113,7 @@
           return str.join(' ');
         }
 
-      $('input:not([name="csrfmiddlewaretoken"]):not([name="files"]),textarea,select').each(function() {
+      $('input:not([name="csrfmiddlewaretoken"]):not([name="files"]):not([name="formname"]),textarea,select').each(function() {
           $(this).attr('name',titleCase($(this).attr('name')));
           $(this).attr('id','id'+$(this).attr('name'));
           if($(this).is('select'))
@@ -1151,12 +1151,15 @@
                 <form class="row g-3" method="post" action="dynamicspace-form?data={{ request.GET.data }}" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.description | safe }}
+                    {% if form.need_files %}
                     <div class="col-12">
                         <div class="form-floating">
                             <input type="file" class="form-control" id="files" style="padding: 2.625rem" name="files" multiple>
                             <label for="files">Files</label>
                         </div>
                     </div>
+                    {% endif %}
+                    <input type="hidden" style="display: none"  name="formname" value="{{ form.title }}">
                     <div class="text-center">
                         <button type="submit" class="btn btn-dark">Submit</button>
                         <button type="reset" class="btn btn-secondary">Reset</button>

@@ -1,5 +1,5 @@
 /**
-* Template Name: GroziitJobs
+* Template Name: DynamicSpaces
 * Updated: Mar 09 2023 with Bootstrap v5.2.3
 * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
 * Author: BootstrapMade.com
@@ -11,6 +11,7 @@
   /**
    * Easy selector helper function
    */
+
   const select = (el, all = false) => {
     el = el.trim()
     if (all) {
@@ -50,28 +51,28 @@
     /**
    * Side Bar Highlight
    */
-    document.getElementById("navitem").addEventListener("click", function (event){
+    // document.getElementById("navitem").addEventListener("click", function (event){
+    //
+    //   console.log(this.classList);
+    //   for (let i = 0; i< this.classList.length; i++){
+    //     console.log(this.classList[i].slice(0, this.classList[i].length - 1));
+    //   if(this.classList[i].slice(0, this.classList[i].length - 1) == "item"){
+    //   document.cookie = "navitem="+this.classList[i];
+    //   }
+    //   }
+    //   // event.target.classList.add("collapsed")
+    //    alert("hello");
+    //   // this.classList.add("collapsed");
+    // })
 
-      console.log(this.classList);
-      for (let i = 0; i< this.classList.length; i++){
-        console.log(this.classList[i].slice(0, this.classList[i].length - 1));
-      if(this.classList[i].slice(0, this.classList[i].length - 1) == "item"){
-      document.cookie = "navitem="+this.classList[i];
-      }
-      }
-      // event.target.classList.add("collapsed")
-       alert("hello");
-      // this.classList.add("collapsed");
-    })
-
-  console.log(document.cookie.split(";"));
-    var list = document.cookie.split(";");
-    for(let i=0; i< list.length; i++){
-      // console.log(list[i].split("=")[0])
-      if(list[i].split("=")[0].trim() == "navitem"){
-        console.log(list[i].split("=")[1])
-      }
-  }
+  // console.log(document.cookie.split(";"));
+  //   var list = document.cookie.split(";");
+  //   for(let i=0; i< list.length; i++){
+  //     // console.log(list[i].split("=")[0])
+  //     if(list[i].split("=")[0].trim() == "navitem"){
+  //       console.log(list[i].split("=")[1])
+  //     }
+  // }
 
 
   /**
@@ -306,6 +307,7 @@
     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
   });
 
+
   /**
    * Initiate Bootstrap validation check
    */
@@ -326,6 +328,7 @@
   /**
    * Initiate Datatables
    */
+
   const datatables = select('.datatable', true)
   datatables.forEach(datatable => {
     new simpleDatatables.DataTable(datatable);
