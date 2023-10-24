@@ -961,6 +961,7 @@ def dynamicspace_form(request):
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
             POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
+
         if profile.account_type == "Job":
             job = Jobs.objects.get(id=request.POST['jobid'])
 
@@ -1199,12 +1200,34 @@ def dynamicspace_form(request):
                 message=strip_tags(message1 + employer),
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[job.eemail.lower()])
+
         if profile.account_type == "Form":
             data = FormData()
             data.data=POSTdata
             data.posted_for = email
             data.form_name = request.POST['formname']
-            data.save()
+
+            #TODO: make the below message generic
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Hk3IqZ3crESzStZOh3wfdlKLrta4K3R',
+            }
+            json_data = {
+                 'message': '🎉 Thank you for enrolling to Sitara Grand.',
+                 'name': "Sitara Grand",
+                 'branch': "Frisco",
+                 'number': request.POST['Phone Number'],
+            }
+            response = requests.post(
+                'https://revuesmart.herokuapp.com/users/message',
+                headers=headers,
+                json=json_data,
+            )
+            print(response.text)
+            if(response.text == "sent"):
+                data.save()
+            else:
+                raise Exception
         #     # Get the file from the request
         #     file = request.FILES['files']
         #
