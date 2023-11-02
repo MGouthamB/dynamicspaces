@@ -640,6 +640,10 @@ def index(request):
 
     jobs = Jobs.objects.filter(posted_by=request.session['email'])
     datas = FormData.objects.filter(posted_for=request.session['email'])
+    #Adding 1st form field data as preview
+    for form_data in datas:
+        #print(form_data.data.split("<br>", 1)[0].split(":")[1])
+        form_data.preview = form_data.data.split("<br>", 1)[0].split(":")[1]
     return render(request, "index.html",
                   {'jobs': jobs,'datas':datas, 'username': profile.username, 'role': profile.job,
                    "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,

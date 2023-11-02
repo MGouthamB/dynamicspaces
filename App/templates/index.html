@@ -277,6 +277,7 @@
                   <tr>
                     <th scope="col">#ID</th>
                     <th scope="col">Form Name</th>
+                       <th scope="col">Data Preview</th>
                     <th scope="col">View</th>
                     <th scope="col">Date</th>
                   </tr>
@@ -286,6 +287,7 @@
                   <tr>
                     <th scope="row">{{ i.id }}</th>
                     <td>{{ i.form_name}}</td>
+                      <td>{{i.preview}}</td>
                     <td style="align-content: center"><i class="bi bi-eye text-primary dataview" style="cursor: pointer" onclick="view('{{ i.data }}','{{ i.form_name }}')"></i></td>
                     <td>{{ i.time|date:"Y-m-d"}}</td>
                   </tr>
