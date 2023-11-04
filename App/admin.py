@@ -5,3 +5,4 @@ admin.site.site_header="Groziit Dynamic Spaces"
 admin.site.register(Jobs)
 admin.site.register(Profiles)
 admin.site.register(Files)
+admin.site.register(FormData)
