@@ -934,7 +934,7 @@ def change_password(request):
             'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> There is an error changing password<br>Please try again or Contact us</b>'
         return HttpResponseRedirect(request, "users-profile")
 
-
+@xframe_options_exempt
 def dynamicspace_form(request):
     try:
         email = ""
