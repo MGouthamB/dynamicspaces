@@ -7,6 +7,7 @@ import datetime
 import requests
 from django import template
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
@@ -935,6 +936,7 @@ def change_password(request):
         return HttpResponseRedirect(request, "users-profile")
 
 @xframe_options_exempt
+@csrf_exempt
 def dynamicspace_form(request):
     try:
         email = ""
