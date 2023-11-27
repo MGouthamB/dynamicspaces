@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
+from django.http import JsonResponse
 
 # from gdstorage.storage import GoogleDriveStorage
 
@@ -941,6 +942,7 @@ def dynamicspace_form(request):
     try:
         email = ""
         if not logged_in(request):
+            print("in dynamicspace_form function ---------------")
             data = request.GET["data"]
             fernet = Fernet(iframe)
             data = fernet.decrypt(data.encode()).decode()
@@ -964,13 +966,13 @@ def dynamicspace_form(request):
 
         profile = Profiles.objects.get(email=email)
         POSTdata = ""
+        print(request.POST, "post data-----")
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
             POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
 
         if profile.account_type == "Job":
             job = Jobs.objects.get(id=request.POST['jobid'])
-
             file = Files()
             file.file = request.FILES['resume']
             file.save()
@@ -1208,20 +1210,22 @@ def dynamicspace_form(request):
                 recipient_list=[job.eemail.lower()])
 
         if profile.account_type == "Form":
+            print(POSTdata)
+            print(request.POST['formname'])
             data = FormData()
-            data.data=POSTdata
+            data.data = POSTdata
             data.posted_for = email
             data.form_name = request.POST['formname']
-
+            # print(request.POST['formname'], request.POST['phone_number'])
             #TODO: make the below message generic
             headers = {
                 'Content-Type': 'application/json',
                 'Authorization': 'Hk3IqZ3crESzStZOh3wfdlKLrta4K3R',
             }
             json_data = {
-                 'message': '🎉 Thank you for enrolling to Sitara Grand.',
+                 'message': "🎉 Thank you for enrolling to Sitara Grand's opening deals. Get a chance to win any one of the deal listed in our website.",
                  'name': "Sitara Grand",
-                 'branch': "Frisco",
+                 'branch': "25691 Smotherman Rd, Suit No:220, Frisco, Texas -75034",
                  'number': request.POST['Phone Number'],
             }
             response = requests.post(
@@ -1229,7 +1233,7 @@ def dynamicspace_form(request):
                 headers=headers,
                 json=json_data,
             )
-            print(response.text)
+            print(response.text, "response")
             if(response.text == "sent"):
                 data.save()
             else:
@@ -1249,11 +1253,13 @@ def dynamicspace_form(request):
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted the {profile.account_type} Application!</b>'
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
     except Exception as e:
         print(e)
         request.session[
             'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>There is an error submitting the {profile.account_type}<br>Please try again!!</b>'
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 
 def pages_contact(request):
