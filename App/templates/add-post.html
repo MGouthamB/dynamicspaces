@@ -176,6 +176,12 @@
 
                     {% endif %}
 
+                {% if actype == "E-Commerce" %}
+
+                    <H1 align="center">Nothing to show here.</H1><br>
+                    <H2 align="center">Coming Soon for E-Commerce...</H2>
+
+                {% else %}
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary" id="submit">Add {{ actype }}</button>
@@ -186,7 +192,7 @@
                         </script>
                     </div>
                 </form><!-- End Profile Edit Form -->
-
+                {% endif %}
             </div>
         </div>
     </section>

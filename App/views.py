@@ -592,7 +592,7 @@ def register(request):
         print(e)
         request.session[
             'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> There is an error creating your account<br>Please try again or Contact us</b>'
-        return HttpResponseRedirect(request, "pages-register")
+        return HttpResponseRedirect("pages-register")
 
 
 def login(request):
@@ -853,10 +853,16 @@ def users_profile(request):
     iframe_data = fernet.encrypt(iframe_data.encode()).decode('utf-8')
     profile = Profiles.objects.get(email=request.session['email'])
 
+    quantities = {
+        "Job" : 2,
+        "Form" : 2,
+        "E-Commerce" : 3
+    }
+
     return render(request, "users-profile.html",
                   {"msg": message_check(request), "profile": profile,
                    'username': profile.username, 'role': profile.job,
-                   "pp": profile.img_url, "iframe": iframe_data, "actype": profile.account_type})
+                   "pp": profile.img_url, "iframe": iframe_data, "actype": profile.account_type,"quantity":quantities[profile.account_type]})
 
 
 def cancelsub(request):
@@ -942,7 +948,6 @@ def dynamicspace_form(request):
     try:
         email = ""
         if not logged_in(request):
-            print("in dynamicspace_form function ---------------")
             data = request.GET["data"]
             fernet = Fernet(iframe)
             data = fernet.decrypt(data.encode()).decode()
