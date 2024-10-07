@@ -1,2 +1,6 @@
 *.pyc
 db.sqlite3
+/App/migrations/
+/files/
+/test.html
+/test.py
