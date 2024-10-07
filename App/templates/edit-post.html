@@ -1,4 +1,5 @@
 {% load static %}
+{% load groziit_filters %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,11 +13,11 @@
 
 
     {% include "metafiles.html" %}
-    <script src="{% static 'assets/ckeditor/adapters/jquery.js' %}"></script>
-    <script src="{% static 'assets/ckeditor/ckeditor.js' %}"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static 'assets/ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static 'assets/ckeditor/adapters/jquery.js' %}"></script>
     {% include 'alerts.html' %}
 </head>
 
@@ -41,10 +42,10 @@
         <div class="row">
 
             <!-- Left side columns -->
-            <div class="col-lg-12">
+            <div class="col-lg-12" style="padding:15px">
 
                 <!-- Profile Edit Form -->
-                <form method="post" action="editing-job">
+                <form method="post" action="editing-job" enctype="multipart/form-data">
                     {% csrf_token %}
                     {#                    <div class="row mb-3">#}
                     {#                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>#}
@@ -59,87 +60,96 @@
                     {#                        </div>#}
                     {#                    </div>#}
                     {% if actype == "Job" %}
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Title</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}" required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Company Name</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="company" type="text" class="form-control" id="company" value="{{ job.company }}" required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Description Gist</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="sdescription" type="text" class="form-control" id="sdescription" value="{{ job.sdescription }}"
-                                   required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <label for="about" class="col-md-4 col-lg-3 col-form-label">Job Description</label>
-                        <div class="col-md-8 col-lg-9">
-                            <div id="toolbar-container">
-                                <textarea name="ckdescription" id="ckdescription"
-                                          style="border: 1px solid #ced4da;border-radius: 0.375rem;"></textarea>
-                                <input name="description" id="description" type="hidden">
-                                <script>
-                                    CKEDITOR.replace('ckdescription');
-                                    var data= `{{ job.description|safe }}`
-                                    CKEDITOR.instances["ckdescription"].setData(data);
-                                </script>
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Title</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
+                                       required>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Location</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="location" type="text" class="form-control" id="location" value="{{ job.location }}" required>
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Company Name</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="company" type="text" class="form-control" id="company"
+                                       value="{{ job.company }}" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Employer Email</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="eemail" type="text" class="form-control" id="eemail" value="{{ job.eemail }}" required>
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Description Gist</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="sdescription" type="text" class="form-control" id="sdescription"
+                                       value="{{ job.sdescription }}"
+                                       required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Keywords</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="keywords" type="text" class="form-control" id="keywords"
-                                   placeholder="Python,Full Stack,etc.(comma-separated values)" value="{{ job.keywords }}">
+                        <div class="row mb-3">
+                            <label for="about" class="col-md-4 col-lg-3 col-form-label">Job Description</label>
+                            <div class="col-md-8 col-lg-9">
+                                <div id="toolbar-container">
+                                <textarea name="ckdescription" id="ckdescription"
+                                          style="border: 1px solid #ced4da;border-radius: 0.375rem;"></textarea>
+                                    <input name="description" id="description" type="hidden">
+                                    <script>
+                                        CKEDITOR.replace('ckdescription');
+                                        var data = `{{ job.description|safe }}`
+                                        CKEDITOR.instances["ckdescription"].setData(data);
+                                    </script>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Logo Image URL</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="logo_img_url" type="text" class="form-control" id="logo_img_url" value="{{ job.logo_img_url }}">
-                            <input name="id" type="hidden" class="form-control" id="id" value="{{ job.id }}" >
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Location</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="location" type="text" class="form-control" id="location"
+                                       value="{{ job.location }}" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Background Image URL</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="background_img_url" type="text" class="form-control" id="background_img_url" value="{{ job.background_img_url }}">
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Employer Email</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="eemail" type="text" class="form-control" id="eemail"
+                                       value="{{ job.eemail }}" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date</label>
-                        <div class="col-md-8 col-lg-9">
-                            <input name="expire_in_days" type="date" class="form-control" id="expire_in_days" value="{{ job.expire_in_days|date:"Y-m-d" }}">
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Keywords</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="keywords" type="text" class="form-control" id="keywords"
+                                       placeholder="Python,Full Stack,etc.(comma-separated values)"
+                                       value="{{ job.keywords }}">
+                            </div>
                         </div>
-                    </div>
+
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Logo Image URL</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="logo_img_url" type="text" class="form-control" id="logo_img_url"
+                                       value="{{ job.logo_img_url }}">
+                                <input name="id" type="hidden" class="form-control" id="id" value="{{ job.id }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Background Image URL</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="background_img_url" type="text" class="form-control"
+                                       id="background_img_url" value="{{ job.background_img_url }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="expire_in_days" type="date" class="form-control" id="expire_in_days"
+                                       value="{{ job.expire_in_days|date:"Y-m-d" }}">
+                            </div>
+                        </div>
                     {% endif %}
 
                     {% if actype == "Form" %}
@@ -147,14 +157,15 @@
                         <div class="row mb-3">
                             <label for="fullName" class="col-md-4 col-lg-3 col-form-label">{{ actype }} Title</label>
                             <div class="col-md-8 col-lg-9">
-                                <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}" required>
+                                <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
+                                       required>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label class="col-md-4 col-lg-3 col-form-label">Need Files</label>
                             <div class="col-md-8 col-lg-9">
-                                <select class="form-select" aria-label="Default select example" name="needfiles" >
+                                <select class="form-select" aria-label="Default select example" name="needfiles">
                                     <option value="Yes" {% if job.need_files %}selected{% endif %}>Yes</option>
                                     <option value="No" {% if not job.need_files %}selected{% endif %}>No</option>
                                 </select>
@@ -168,15 +179,224 @@
                                     <textarea name="ckdescription" id="ckdescription"
                                               style="border: 1px solid #ced4da;border-radius: 0.375rem;"></textarea>
                                     <input name="description" id="description" type="hidden">
-                                    <input name="id" type="hidden" class="form-control" id="id" value="{{ job.id }}" >
+                                    <input name="id" type="hidden" class="form-control" id="id" value="{{ job.id }}">
                                     <script>
                                         CKEDITOR.replace('ckdescription');
-                                        var data= `{{ job.description|safe }}`
+                                        var data = `{{ job.description|safe }}`
                                         CKEDITOR.instances["ckdescription"].setData(data);
                                     </script>
                                 </div>
                             </div>
                         </div>
+
+                    {% endif %}
+
+                    {% if actype == "Images" %}
+
+                        <style>
+                            .box {
+                                position: relative;
+                                background: #ffffff;
+                                width: 100%;
+                            }
+
+                            .box-header {
+                                color: #444;
+                                display: block;
+                                padding: 10px;
+                                position: relative;
+                                border-bottom: 1px solid #f4f4f4;
+                                margin-bottom: 10px;
+                            }
+
+                            .box-tools {
+                                position: absolute;
+                                right: 10px;
+                                top: 5px;
+                            }
+
+                            .dropzone-wrapper {
+                                border: 1px dashed #ced4da;
+                                color: black;
+                                position: relative;
+                                height: 200px;
+                            }
+
+                            .dropzone-desc {
+                                position: absolute;
+                                margin: 0 auto;
+                                left: 0;
+                                right: 0;
+                                text-align: center;
+                                width: 40%;
+                                top: 50px;
+                                font-size: 16px;
+                            }
+
+                            .dropzone,
+                            .dropzone:focus {
+                                position: absolute;
+                                outline: none !important;
+                                width: 100%;
+                                height: 200px;
+                                cursor: pointer;
+                                opacity: 0;
+                            }
+
+                            .dropzone-wrapper:hover,
+                            .dropzone-wrapper.dragover {
+                                background: rgb(34, 119, 187, 0.05);
+                            }
+
+                            .preview-zone {
+                                text-align: center;
+                            }
+
+                            .preview-zone .box {
+                                box-shadow: none;
+                                border-radius: 0;
+                                margin-bottom: 0;
+                            }
+
+                            .upload_btn {
+                                width: 30rem;
+                            }
+
+                            .row > * {
+                                padding-right: calc(var(--bs-gutter-x) * 3);
+                                padding-left: calc(var(--bs-gutter-x) * 3);
+                            }
+
+                            th, td {
+                                border-width: var(--bs-border-width);
+                            }
+
+                            td:nth-child(n+3), th:nth-child(n+3) {
+                                text-align: center;
+                            }
+
+                            .image-gallery {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                            }
+
+                            .image-item {
+                                text-align: center;
+                                width: 100px; /* Adjust the size as needed */
+                            }
+
+                            .image-item img {
+                                width: 100%;
+                                height: auto;
+                                border: 1px solid #ccc;
+                                border-radius: 4px;
+                            }
+
+                            .delete-button {
+                                margin-top: 5px;
+                                color: red;
+                                border: none;
+                                padding: 5px;
+                                cursor: pointer;
+                                border-radius: 4px;
+                                width: 100%;
+                            }
+
+                            @media (max-width: 767px) {
+                                .image-gallery {
+                                    justify-content: space-between;
+                                }
+                            }
+
+
+                        </style>
+
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Images Title</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
+                                       required>
+                                <input name="id" type="hidden" class="form-control" id="id" value="{{ job.id }}">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-md-4 col-lg-3 col-form-label">Upload Images</label>
+                            <div class="col-md-8 col-lg-9">
+                                <div class="preview-zone hidden">
+                                    <div class="box box-solid">
+                                        {#                                        <div class="box-header with-border">#}
+                                        {#                                            <div><b>Upload Images</b></div>#}
+                                        <div class="box-tools pull-right">
+                                            <!--                                        <button type="button" class="btn btn-danger btn-xs remove-preview">-->
+                                            <!--                                            <i class="fa fa-times"></i> Reset This Form-->
+                                            <!--                                        </button>-->
+                                        </div>
+                                        {#                                        </div>#}
+                                        <div class="box-body"></div>
+                                    </div>
+                                </div>
+                                <div class="dropzone-wrapper">
+                                    <div class="dropzone-desc" id="upload_description">
+                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA4klEQVR4nO2XwQnCQBBFXyA9mDqUYBMWoUWILagn60gtNmABai6iFWQlMMIePDkkm8X/4MOSkJn/mSXsghBCCCGEGIqZKUtq4Gnq11kxBx5AML2AJZmaDzmFqG3L9IabyPxnPfntdIsMl1GAMgpxZcIcgJMZJgqAPevf7cmIEAXIkqAAidEE+PcJVM7DmDdA5T0MtsA9YYDW2d9tIPX3eAt0plT98RY4Oo8OIXUAL0EByHwCnRUoGJ/Cent+AlysyBZYjKyd9e49/Mzmy912bK1xsrLr4HlkNdZbCCGEEIKBeAOGIJfY8SNlWQAAAABJRU5ErkJggg==">
+
+                                        <p>Choose or drag the images here to upload.</p>
+                                    </div>
+                                    <input id='form_upload' type="file" name="images" class="dropzone" multiple accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-md-4 col-lg-3 col-form-label">Selected Images</label>
+                            <div class="col-md-8 col-lg-9">
+                                <div class="image-gallery">
+                                    {% with job.description|split:"," as images %}
+                                        {% for image in images %}
+                                            <div class="image-item">
+                                                <img src="{{ image }}" alt="Image">
+                                                <button type="button" class="delete-button">
+                                                    <i class="bi bi-trash3-fill"></i></button>
+                                            </div>
+                                        {% endfor %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $('.delete-button').click(function () {
+                                var $button = $(this);
+                                $.ajax({
+                                    url: '/GroziitRemoveImage',
+                                    type: 'POST',
+                                    data: {
+                                        "key": "{{ job.id }}_"+$button.parent().index(),
+                                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                                    },
+                                    success: function (response) {
+                                        alertify.set('notifier', 'position', 'top-right');
+                                        alertify.message(response);
+                                        if (response.includes('Successfully')) {
+                                            $button.parent().remove();
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error('Error:', error);
+                                    }
+                                });
+                            });
+                        </script>
+                        <script>
+                            $(document).ready(function () {
+                                $('#form_upload').change(function () {
+                                    var files = this.files;
+                                    var fileCount = this.files.length;
+                                    var message = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABKklEQVR4nO2XMUsDMRiGHyycoGsHR8G5q4PYQic3f4OTQn9FN6+D+gPEsXOnQrt1EJ39CSLnYAcHoYhiI4G3EA4tJHemVO6Fj0ty+d48lwu5HFT6WQnQA54B4xk25wrYpIDSgIHzMQRqoQCZTA488xaDv+h6EQpgFKF5h8C7yqerALA6UfkDaBMJIHNmwOpS9SmwGwMgXbIoBzEAEkEsZsKNtxgApfmZdQXYA+6A8SoAjoFX5d3HBKgBXeBLOX1g+y8AbvVkW07bDjBRX7vzdTz8vAEe1Hatesv5Wj4C+55+3gANYOZM86fKI6Ae4BeUcObcm2vT2SjgF5RwAzwBRyX5/a+N6DdVAKZ6BazbIsxyZ7siasrLekb9MTG5OC/rbGc8I5OX9axEXt8YvNlum8csdQAAAABJRU5ErkJggg=="><p>' + fileCount + " images are selected!</p>";
+
+                                    $("#upload_description").html(message);
+                                });
+                            });
+                        </script>
 
                     {% endif %}
 

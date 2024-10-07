@@ -1137,10 +1137,10 @@
                 <div class="explain-title">Application Deadline</div>
                 <div class="explain-subtitle">{{ job.expire_in_days }}</div>
             </div>
-{#            <div class="explain-contents">#}
-{#                <div class="explain-title">Posted By</div>#}
-{#                <div class="explain-subtitle">{{ job.posted_by }}</div>#}
-{#            </div>#}
+            {#            <div class="explain-contents">#}
+            {#                <div class="explain-title">Posted By</div>#}
+            {#                <div class="explain-subtitle">{{ job.posted_by }}</div>#}
+            {#            </div>#}
             {#                        <div class="explain-contents">#}
             {#                            <div class="explain-title">Offer Salary</div>#}
             {#                            <div class="explain-subtitle">$2150.0 / Month</div>#}
@@ -1156,17 +1156,20 @@
                     APPLICATION FORM</h5>
 
                 <!-- Floating Labels Form -->
-                <form class="row g-3" method="post" action="dynamicspace-form?data={{ request.GET.data }}" enctype="multipart/form-data">
+                <form class="row g-3" method="post" id="application" action="dynamicspace-form?data={{ request.GET.data }}"
+                      enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="col-md-12">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="floatingName" placeholder="Your Name" name="name">
+                            <input type="text" class="form-control" id="floatingName" placeholder="Your Name"
+                                   name="name" required>
                             <label for="floatingName">Your Name</label>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-floating">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="Your Email" name="email">
+                            <input type="email" class="form-control" id="floatingEmail" placeholder="Your Email"
+                                   name="email" required>
                             <label for="floatingEmail">Your Email</label>
                         </div>
                     </div>
@@ -1174,14 +1177,15 @@
                     <div class="col-12">
                         <div class="form-floating">
                             <textarea class="form-control" placeholder="Address" id="floatingTextarea"
-                                      style="height: 100px;" name="address"></textarea>
+                                      style="height: 100px;" name="address" required></textarea>
                             <label for="floatingTextarea">Address</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="col-md-12">
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="floatingCity" placeholder="City" name="city">
+                                <input type="text" class="form-control" id="floatingCity" placeholder="City"
+                                       name="city" required>
                                 <label for="floatingCity">City</label>
                             </div>
                         </div>
@@ -1241,25 +1245,30 @@
                                 <option value="Wisconsin">Wisconsin</option>
                                 <option value="Wyoming">Wyoming</option>
                             </select>
-                            <input type="hidden" class="form-control" id="floatingName" placeholder="Your Name" name="jobid" value="{{ job.id }}">
+                            <input type="hidden" class="form-control" id="floatingName" placeholder="Your Name"
+                                   name="jobid" value="{{ job.id }}" required>
                             <label for="floatingSelect">State</label>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="floatingZip" placeholder="Zip" name="zipcode">
-                            <label for="floatingZip">Zip</label>
+                            <input type="text" class="form-control" id="floatingZip" placeholder="Zip" name="zipcode" required>
+                            <label for="floatingZip" >Zip</label>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="file" class="form-control" id="resume" style="padding: 2.625rem" name="resume">
+                            <input type="file" class="form-control" id="resume" style="padding: 2.625rem" name="resume" accept="application/pdf" required>
                             <label for="resume">Resume</label>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-dark">Submit</button>
+                    <div class="text-center" id="buttons">
+                        <button type="submit" class="btn btn-dark" onclick="showLoading(event)">Submit</button>
                         <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                    <br>
+                    <div class="spinner-border text-center m-auto" role="status" id="loading" style="display: none;margin-top: 1rem!important;">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </form><!-- End floating Labels Form -->
 
@@ -1267,7 +1276,29 @@
         </div>
     </div>
 </div>
+<script>
+    function showLoading(e)
+    {
 
+        const form = document.getElementById("application");
+        const requiredFields = form.querySelectorAll("[required]");
+
+        let allFieldsFilled = true;
+        requiredFields.forEach(function(field) {
+            if (!field.value) {
+                allFieldsFilled = false;
+            }
+        });
+
+        if (!allFieldsFilled) {
+            return false;
+        }
+
+
+        document.getElementById("buttons").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+    }
+</script>
 
 </body>
 </html>

@@ -1,4 +1,7 @@
+import json
+
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import render
 from .models import *
 from cryptography.fernet import Fernet
@@ -11,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
+import boto3
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
 
 # from gdstorage.storage import GoogleDriveStorage
@@ -20,6 +25,9 @@ client_id = 'AamB-Te52PnmRJKM7rmroLZ_m7j9voNh9aqkqSkvBKx0kWX_64LqTwbBr9k8b8oXzi2
 client_key = 'EI9D1G-ilWpyvJYesga2b3s13lqk53h3QSjsVY6UMhYqz29ZloMiRouTwFM82obO16fr725FblHHaNrl'
 
 iframe = 'ET-fOTwEB78NHvQF2wGouthaMjg5uYMT-MrpDnKrq8c='
+
+Imgur_Client_ID="d4adccbc743e99a"
+Imgur_Client_secret="894ad64b02348ae6402c93a3f8fe9dd6fb8eec1d"
 
 message1 = '''<!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -478,6 +486,34 @@ message1 = '''<!DOCTYPE html
   <![endif]-->
 </head>'''
 
+s3_client = boto3.client('s3')
+
+def save_files(request):
+    try:
+        imgur_api_url = "https://api.imgur.com/3/image"
+        headers = {"Authorization": f"Client-ID {Imgur_Client_ID}"}
+        file_names=""
+        files = request.FILES.getlist('images')
+        file_paths = []
+
+        for file in files:
+            # print(file.name)
+            payload = {"image": file}
+            response = requests.post(imgur_api_url, headers=headers, files=payload)
+            # print(response.text)
+            if response.status_code == 200:
+                response = json.loads(response.text)
+                print(response["data"]["link"])
+                file_paths.append(response["data"]["link"])
+
+        if file_paths:
+            file_names += ','.join(file_paths)
+
+        return file_names
+    except Exception as e:
+        print(e)
+        return ""
+
 
 def get_access_token():
     data = {
@@ -635,19 +671,21 @@ def index(request):
     profile = Profiles.objects.get(email=request.session['email'])
 
     iframe_data = ""
-    if profile.account_type == "Form":
+    if profile.account_type in ["Form","Images"]:
         fernet = Fernet(iframe)
         iframe_data = request.session["email"] + "~" + request.session["password"]
         iframe_data = fernet.encrypt(iframe_data.encode()).decode('utf-8')
 
     jobs = Jobs.objects.filter(posted_by=request.session['email'])
     datas = FormData.objects.filter(posted_for=request.session['email'])
+    contents = Content.objects.filter(posted_by=request.session['email'])
     #Adding 1st form field data as preview
     for form_data in datas:
         #print(form_data.data.split("<br>", 1)[0].split(":")[1])
         form_data.preview = form_data.data.split("<br>", 1)[0].split(":")[1]
     return render(request, "index.html",
                   {'jobs': jobs,'datas':datas, 'username': profile.username, 'role': profile.job,
+                   "contents": contents,
                    "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,
                    "i_frame": iframe_data})
 
@@ -662,15 +700,105 @@ def add_post(request):
                                              "pp": profile.img_url, "actype": profile.account_type,
                                              "msg": message_check(request)})
 
+def add_content(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+
+    if request.method == 'POST':
+        try:
+            content = Content()
+            content.title = request.POST['title']
+            content.subtitle = request.POST['sub-title']
+            content.description = request.POST['description']
+            content.posted_by = request.session['email']
+            content.save()
+
+            request.session[
+                'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully added the content!</b>'
+            return HttpResponseRedirect('add-content')
+        except Exception as e:
+            print(e)
+            request.session[
+                'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error Editing<br>Please try again.</b>'
+            return HttpResponseRedirect('add-content')
+    else:
+        profile = Profiles.objects.get(email=request.session['email'])
+
+        return render(request, "add-content.html", {'username': profile.username, 'role': profile.job,
+                                                 "pp": profile.img_url, "actype": profile.account_type,
+                                                 "msg": message_check(request)})
+
 
 def edit_post(request):
     if not logged_in(request):
         return HttpResponseRedirect('pages-login')
-    job = Jobs.objects.get(id=request.GET["id"])
-    profile = Profiles.objects.get(email=request.session['email'])
-    return render(request, "edit-post.html",
-                  {'job': job, 'username': profile.username, 'role': profile.job,
-                   "pp": profile.img_url, "actype": profile.account_type, "msg": message_check(request)})
+    try:
+        job = Jobs.objects.get(id=request.GET["id"])
+        profile = Profiles.objects.get(email=request.session['email'])
+        return render(request, "edit-post.html",
+                      {'job': job, 'username': profile.username, 'role': profile.job,
+                       "pp": profile.img_url, "actype": profile.account_type, "msg": message_check(request)})
+    except Exception as e:
+        return HttpResponseRedirect('index')
+
+def edit_content(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+    if request.method=="POST":
+        try:
+            content = Content.objects.get(id=request.POST["id"], posted_by=request.session['email'])
+            content.title = request.POST['title']
+            content.subtitle = request.POST['sub-title']
+            content.description = request.POST['description']
+            content.save()
+            request.session[
+                'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully edited the Content!</b>'
+            return HttpResponseRedirect('index')
+        except Exception as e:
+            print(e)
+            request.session[
+                'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error Editing<br>Please try again.</b>'
+            return HttpResponseRedirect('index')
+    try:
+        content = Content.objects.get(id=request.GET["id"])
+        profile = Profiles.objects.get(email=request.session['email'])
+        return render(request, "edit-content.html",
+                      {'content': content, 'username': profile.username, 'role': profile.job,
+                       "pp": profile.img_url, "actype": profile.account_type, "msg": message_check(request)})
+    except Exception as e:
+        return HttpResponseRedirect('index')
+
+def delete_post(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+    try:
+        profile = Profiles.objects.get(email=request.session['email'])
+        job = Jobs.objects.get(id=request.GET["id"],posted_by=request.session['email'])
+        job.delete()
+        request.session[
+            'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully deleted the {profile.account_type}!</b>'
+        return HttpResponseRedirect('index')
+    except Exception as e:
+        print(e)
+        request.session[
+            'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error deleting<br>Please try again.</b>'
+        return HttpResponseRedirect('index')
+
+def delete_content(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+    try:
+        profile = Profiles.objects.get(email=request.session['email'])
+        content = Content.objects.get(id=request.GET["id"],posted_by=request.session['email'])
+        content.delete()
+        request.session[
+            'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully deleted the {profile.account_type}!</b>'
+        return HttpResponseRedirect('index')
+    except Exception as e:
+        print(e)
+        request.session[
+            'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error deleting<br>Please try again.</b>'
+        return HttpResponseRedirect('index')
 
 
 def adding_job(request):
@@ -680,8 +808,12 @@ def adding_job(request):
         profile = Profiles.objects.get(email=request.session['email'])
         job = Jobs()
         job.title = request.POST['title']
-        job.description = request.POST['description']
         job.posted_by = request.session['email']
+        if profile.account_type in ['Job','Form']:
+            job.description = request.POST['description']
+        elif profile.account_type == "Images":
+            job.description = save_files(request)
+
         if profile.account_type == "Job":
             job.sdescription = request.POST['sdescription']
             job.location = request.POST['location']
@@ -693,6 +825,7 @@ def adding_job(request):
             job.keywords = request.POST['keywords']
         elif profile.account_type == "Form":
             job.need_files = request.POST['needfiles'] == "Yes"
+
         job.save()
         request.session[
             'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully added the {profile.account_type}!</b>'
@@ -709,9 +842,17 @@ def editing_job(request):
         return HttpResponseRedirect('pages-login')
     try:
         profile = Profiles.objects.get(email=request.session['email'])
-        job = Jobs.objects.get(id=request.POST["id"])
+        job = Jobs.objects.get(id=request.POST["id"],posted_by=request.session['email'])
         job.title = request.POST['title']
-        job.description = request.POST['description']
+        if profile.account_type in ['Job', 'Form']:
+            job.description = request.POST['description']
+        elif profile.account_type == "Images":
+            new_images = save_files(request)
+            if job.description!="" and new_images!="":
+                job.description = ",".join([job.description,new_images])
+            elif new_images!="":
+                job.description = new_images
+
         if profile.account_type == "Job":
             job.sdescription = request.POST['sdescription']
             job.location = request.POST['location']
@@ -732,6 +873,26 @@ def editing_job(request):
         request.session[
             'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error Editing<br>Please try again.</b>'
         return HttpResponseRedirect('edit-post')
+
+def GroziitRemoveImage(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+
+    try:
+        profile = Profiles.objects.get(email=request.session['email'])
+        if request.method=="POST" and profile.account_type == "Images":
+            job_id, image_id = request.POST['key'].split("_")
+            job = Jobs.objects.get(id=job_id, posted_by=request.session['email'])
+            images = job.description.split(",")
+            del images[int(image_id)]
+            job.description = ",".join(images)
+            job.save()
+
+            return HttpResponse('<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully deleted the image!</b>')
+
+    except Exception as e:
+        print(e)
+        return HttpResponse('<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Error Editing<br>Please try again.</b>')
 
 
 @xframe_options_exempt
@@ -835,6 +996,40 @@ def GroziitFromview(request):
     # job.time = tim
     return render(request, "GroziitFromView.html", {"form": form, "msg": message_check(request)})
 
+@xframe_options_exempt
+def GroziitImageview(request):
+    if not logged_in(request):
+        try:
+            data = request.GET["data"]
+            fernet = Fernet(iframe)
+            data = fernet.decrypt(data.encode()).decode()
+
+            email, password = data.split("~")
+
+            profile = Profiles.objects.get(email=email)
+
+            if not payment_check(request, id=profile.subscriber_id, email=email):
+                raise Exception
+
+            if profile.subscriber == False:
+                raise Exception
+
+            fernet = Fernet(profile.key.encode('utf-8'))
+
+            if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
+                raise Exception
+
+            if profile.account_type != "Form":
+                raise Exception
+
+            images = Jobs.objects.get(id=request.GET['id'], posted_by=email)
+            return render(request, "GroziitImageview.html", {"images": images.description.split(','), "msg": message_check(request)})
+
+        except Exception as e:
+            return HttpResponseRedirect('404')
+    images = Jobs.objects.get(id=request.GET['id'], posted_by=request.session['email'])
+    return render(request, "GroziitImageview.html", {"images": images.description.split(','), "msg": message_check(request)})
+
 
 def pages_login(request):
     return render(request, "pages-login.html", {"msg": message_check(request)})
@@ -856,7 +1051,8 @@ def users_profile(request):
     quantities = {
         "Job" : 2,
         "Form" : 2,
-        "E-Commerce" : 3
+        "E-Commerce" : 3,
+        "Images": 2
     }
 
     return render(request, "users-profile.html",
@@ -971,18 +1167,25 @@ def dynamicspace_form(request):
 
         profile = Profiles.objects.get(email=email)
         POSTdata = ""
-        print(request.POST, "post data-----")
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
             POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
 
         if profile.account_type == "Job":
             job = Jobs.objects.get(id=request.POST['jobid'])
-            file = Files()
-            file.file = request.FILES['resume']
-            file.save()
+            application = JobApplication()
+            application.job = job
+            application.name = request.POST['name']
+            application.email = request.POST['email']
+            application.address = request.POST['address']
+            timestamp = str(int(time.time() * 1000))
+            file = request.FILES['resume']
+            file_name = timestamp + "_" + file.name
+            s3_client.upload_fileobj(file, 'dynamic-spaces-resumes',f'{profile.company.lower()}/{file_name}')
+            application.resume_link = f"https://dynamic-spaces-resumes.s3.amazonaws.com/{profile.company.lower()}/{file_name}"
+            application.save()
             employee = f'''
-    
+
                         <body>
                             <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                 <tr>
@@ -1018,12 +1221,12 @@ def dynamicspace_form(request):
                                                                                             Thank you for providing the information. This mail is an acknowledgement that we have received your data.
                                                                                         </td>
                                                                                     </tr>
-    
+
                                                                                 </table>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
-    
+
                                                                     <table class="body-action" align="center" width="100%" cellpadding="0"
                                                                         cellspacing="0" role="presentation">
                                                                         <tr>
@@ -1043,14 +1246,14 @@ def dynamicspace_form(request):
                                                                             </td>
                                                                         </tr>
                                                                     </table>
-    
+
                                                                     <p>If you have any questions, feel free to <a
                                                                             href="mailto:{job.eemail}">Contact the mail address of the
                                                                             sender</a>. (Click on the link to contact)</p>
                                                                     <p>Thanks,
                                                                         <br>Team {job.company}
                                                                     </p>
-    
+
                                                                     <!-- Sub copy -->
                                                                     <table class="body-sub" role="presentation" align="center">
                                                                         <tr>
@@ -1059,7 +1262,7 @@ def dynamicspace_form(request):
                                                                                         href="https://groziit.com"><img
                                                                                             src="https://i.imgur.com/OUzZa5Z.png"
                                                                                             style="width: 60px;" /></a></p>
-    
+
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -1077,7 +1280,7 @@ def dynamicspace_form(request):
                                                             <td class="content-cell" align="center">
                                                                 <p class="f-fallback sub align-center">&copy; Copyright {job.company}. All Rights
                                                                     Reserved</p>
-    
+
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -1088,7 +1291,7 @@ def dynamicspace_form(request):
                                 </tr>
                             </table>
                         </body>
-    
+
                         </html>'''
             employer = f'''<body>
                         <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -1124,16 +1327,16 @@ def dynamicspace_form(request):
                                                                                     <td class="attributes_item">
                                                                                         <span class="f-fallback">
                                                                                         {POSTdata} <br/>
-                                                                                        <strong>File Link:</strong> {request.build_absolute_uri(file.file.url)}
+                                                                                        <strong>Resume Link:</strong> {application.resume_link}
                                                                                         </span>
                                                                                     </td>
                                                                                 </tr>
-    
+
                                                                             </table>
                                                                         </td>
                                                                     </tr>
                                                                 </table>
-    
+
                                                                 <table class="body-action" align="center" width="100%" cellpadding="0"
                                                                     cellspacing="0" role="presentation">
                                                                     <tr>
@@ -1153,14 +1356,14 @@ def dynamicspace_form(request):
                                                                         </td>
                                                                     </tr>
                                                                 </table>
-    
+
                                                                 <p>If you have any questions, feel free to <a
                                                                         href="mailto:contact@groziit.com">Contact the mail address of the
                                                                         sender</a>. (Click on the link to contact)</p>
                                                                 <p>Thanks,
                                                                     <br>Team GROZiiT
                                                                 </p>
-    
+
                                                                 <!-- Sub copy -->
                                                                 <table class="body-sub" role="presentation" align="center">
                                                                     <tr>
@@ -1169,7 +1372,7 @@ def dynamicspace_form(request):
                                                                                     href="https://groziit.com"><img
                                                                                         src="https://i.imgur.com/OUzZa5Z.png"
                                                                                         style="width: 60px;" /></a></p>
-    
+
                                                                         </td>
                                                                     </tr>
                                                                 </table>
@@ -1187,7 +1390,7 @@ def dynamicspace_form(request):
                                                         <td class="content-cell" align="center">
                                                             <p class="f-fallback sub align-center">&copy; Copyright GROZiiT. All Rights
                                                                 Reserved</p>
-    
+
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -1198,7 +1401,7 @@ def dynamicspace_form(request):
                             </tr>
                         </table>
                     </body>
-    
+
                     </html>'''
 
             send_mail(
@@ -1215,7 +1418,6 @@ def dynamicspace_form(request):
                 recipient_list=[job.eemail.lower()])
 
         if profile.account_type == "Form":
-            print(POSTdata)
             print(request.POST['formname'])
             data = FormData()
             data.data = POSTdata
@@ -1274,3 +1476,34 @@ def pages_contact(request):
     return render(request, "pages-contact.html", {"msg": message_check(request), "profile": profile,
                                                   'username': profile.username, 'role': profile.job,
                                                   "pp": profile.img_url, "actype": profile.account_type})
+
+
+def GroziitApplicationsView(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+
+    profile = Profiles.objects.get(email=request.session['email'])
+
+    job_applications = JobApplication.objects.filter(job__posted_by=profile.email)
+
+    print(list(job_applications))
+
+    return render(request, "GroziitApplicationsView.html",
+                  {'job_applications': job_applications, 'username': profile.username, 'role': profile.job,
+                   "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type})
+
+
+def GroziitContentAPI(request):
+    content_id = request.GET.get('id')
+
+    if not content_id:
+        return JsonResponse({'error': 'ID parameter is missing'}, status=400)
+
+    try:
+        content = Content.objects.get(id=content_id)
+    except Content.DoesNotExist:
+        return JsonResponse({'error': 'Content not found'}, status=404)
+
+    content_data = model_to_dict(content)
+    del content_data['posted_by']
+    return JsonResponse(content_data)

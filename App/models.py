@@ -34,11 +34,21 @@ class Profiles(models.Model):
     img_url = models.CharField(max_length=500,default="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg")
     # profile_pic = models.ImageField(upload_to='images')
 
-class Files(models.Model):
-    file = models.FileField(upload_to='files')
+class JobApplication(models.Model):
+    job = models.ForeignKey("Jobs", on_delete=models.CASCADE)
+    name = models.CharField(max_length=100,blank=False)
+    email = models.EmailField(blank=False)
+    address = models.TextField()
+    resume_link = models.URLField()
 
 class FormData(models.Model):
     data = models.CharField(max_length=2000)
     posted_for = models.CharField(max_length=500)
     time = models.DateField(editable=False, default=timezone.now)
     form_name = models.CharField(max_length=500)
+
+class Content(models.Model):
+    title = models.CharField(max_length=500)
+    subtitle = models.CharField(max_length=2000)
+    description = models.TextField()
+    posted_by=models.CharField(max_length=500)

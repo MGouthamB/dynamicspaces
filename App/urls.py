@@ -8,7 +8,11 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('index', views.index, name='index'),
     path('add-post', views.add_post, name='add-post'),
+    path('add-content', views.add_content, name='add-content'),
     path('edit-post', views.edit_post, name='edit-post'),
+    path('edit-content', views.edit_content, name='edit-content'),
+    path('delete-post', views.delete_post, name='delete-post'),
+    path('delete-content', views.delete_content, name='delete-content'),
     path('adding-job', views.adding_job, name='adding-job'),
     path('editing-job', views.editing_job, name='editing-job'),
     path('GroziitDynamicSpace', views.GroziitDynamicSpace, name='GroziitDynamicSpace'),
@@ -25,7 +29,11 @@ urlpatterns = [
     path('edit-profile', views.edit_profile, name="edit_profile"),
     path('change-password', views.change_password, name="change-password"),
     path('dynamicspace-form',views.dynamicspace_form,name="dynamicspace-form"),
-    path('GroziitFromview',views.GroziitFromview,name="GroziitFromview")
+    path('GroziitFromview',views.GroziitFromview,name="GroziitFromview"),
+    path('GroziitApplicationsView',views.GroziitApplicationsView,name="GroziitApplicationsView"),
+    path('GroziitImageview',views.GroziitImageview,name="GroziitImageview"),
+    path('GroziitRemoveImage',views.GroziitRemoveImage,name="GroziitRemoveImage"),
+    path('GroziitContentAPI',views.GroziitContentAPI,name="GroziitContentAPI")
     # path('dynamicspace', views.)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
