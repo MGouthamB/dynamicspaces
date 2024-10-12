@@ -1180,6 +1180,12 @@ def dynamicspace_form(request):
             application.address = request.POST['address']
             timestamp = str(int(time.time() * 1000))
             file = request.FILES['resume']
+
+            if (file.size / (1024 * 1024) > 2) or (not file.name.endswith((".pdf", ".doc", ".docx"))):
+                request.session[
+                    'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>Please Upload a valid file.</b>'
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
             file_name = timestamp + "_" + file.name
             s3_client.upload_fileobj(file, 'dynamic-spaces-resumes',f'{profile.company.lower()}/{file_name}')
             application.resume_link = f"https://dynamic-spaces-resumes.s3.amazonaws.com/{profile.company.lower()}/{file_name}"

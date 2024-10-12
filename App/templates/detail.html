@@ -1258,9 +1258,12 @@
                     </div>
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="file" class="form-control" id="resume" style="padding: 2.625rem" name="resume" accept="application/pdf" required>
-                            <label for="resume">Resume</label>
+                            <input type="file" class="form-control" id="resume" style="padding: 2.625rem" name="resume"
+                                   accept=".pdf, .doc, .docx" required onchange="validateFileSize()">
+                            <label for="resume">Resume ( Less than 2MB )</label>
                         </div>
+                        <br>
+                        <span id="file-error" style="color: red; display: none;">File size must be less than 2MB.</span>
                     </div>
                     <div class="text-center" id="buttons">
                         <button type="submit" class="btn btn-dark" onclick="showLoading(event)">Submit</button>
@@ -1297,6 +1300,27 @@
 
         document.getElementById("buttons").style.display = "none";
         document.getElementById("loading").style.display = "block";
+    }
+
+    function validateFileSize() {
+        const fileInput = document.getElementById('resume');
+        const file = fileInput.files[0];
+        const errorMsg = $('#file-error');
+
+        if (file) {
+            const fileSize = file.size;
+            const maxSize = 2 * 1024 * 1024;
+
+            if (fileSize > maxSize) {
+                errorMsg.show();
+                fileInput.value = '';
+                setTimeout(function() {
+                    errorMsg.fadeOut('slow');
+                }, 10000);
+            } else {
+                errorMsg.hide();
+            }
+        }
     }
 </script>
 
