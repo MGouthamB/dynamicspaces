@@ -129,6 +129,7 @@ MEDIA_URL = '/media/'
 CKEDITOR_CONFIGS={
     'default':{
         'toolbar':'full',
+        'versionCheck': False
     }
 }
 
