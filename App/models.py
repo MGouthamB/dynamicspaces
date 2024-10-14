@@ -52,3 +52,4 @@ class Content(models.Model):
     subtitle = models.CharField(max_length=2000)
     description = models.TextField()
     posted_by=models.CharField(max_length=500)
+    key = models.CharField(max_length=500)

@@ -711,6 +711,7 @@ def add_content(request):
             content.subtitle = request.POST['sub-title']
             content.description = request.POST['description']
             content.posted_by = request.session['email']
+            content.key = Fernet.generate_key().decode('utf-8')
             content.save()
 
             request.session[
@@ -1507,9 +1508,15 @@ def GroziitContentAPI(request):
 
     try:
         content = Content.objects.get(id=content_id)
+        if not logged_in(request):
+            token = request.headers.get('Authorization')
+            if token != f'Token {content.key}':
+                return JsonResponse({'error': 'Invalid or missing token'}, status=401)
     except Content.DoesNotExist:
         return JsonResponse({'error': 'Content not found'}, status=404)
 
     content_data = model_to_dict(content)
     del content_data['posted_by']
+    del content_data['id']
+    del content_data['key']
     return JsonResponse(content_data)

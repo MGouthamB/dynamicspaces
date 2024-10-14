@@ -390,7 +390,7 @@
                                 <tr>
                                     <th scope="col">#ID</th>
                                     <th scope="col">Content Name</th>
-                                    <th scope="col">Content Sub Title</th>
+                                    <th scope="col">Authentication Key</th>
                                     <th scope="col">API link</th>
                                     <th scope="col">Edit/Delete</th>
                                 </tr>
@@ -400,7 +400,7 @@
                                     <tr>
                                         <th scope="row">{{ i.id }}</th>
                                         <td>{{ i.title }}</td>
-                                        <td>{{ i.subtitle }}</td>
+                                        <td>{{ i.key }}</td>
                                         <td><a href="GroziitContentAPI?id={{ i.id }}" class="text-primary"><i class="bi bi-box-arrow-up-right"></i></a></td>
                                         <td style="align-content: center">
                                             <a href="edit-content?id={{ i.id }}" class="text-primary"><i
