@@ -33,7 +33,9 @@ urlpatterns = [
     path('GroziitApplicationsView',views.GroziitApplicationsView,name="GroziitApplicationsView"),
     path('GroziitImageview',views.GroziitImageview,name="GroziitImageview"),
     path('GroziitRemoveImage',views.GroziitRemoveImage,name="GroziitRemoveImage"),
-    path('GroziitContentAPI',views.GroziitContentAPI,name="GroziitContentAPI")
+    path('GroziitContentAPI',views.GroziitContentAPI,name="GroziitContentAPI"),
+    path('GroziitIntegrations',views.GroziitIntegrations,name="GroziitIntegrations"),
+    path('GroziitIntegrations/<int:id>',views.GroziitIntegrationsDetails,name="GroziitIntegrationsDetails"),
     # path('dynamicspace', views.)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

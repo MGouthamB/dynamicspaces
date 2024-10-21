@@ -4,35 +4,41 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link item1" id="Dashboard" href="index">
+            <a class="nav-link item1" id="Dashboard" href="/index">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
         </li><!-- End Dashboard Nav -->
 
         <li class="nav-item">
-            <a class="nav-link collapsed item2" id="posting" href="add-post">
+            <a class="nav-link collapsed item2" id="posting" href="/add-post">
                 <i class="bi bi-plus-square"></i>
                 <span>Add {{ actype }}</span>
             </a>
         </li>
     {% if actype == "Job" %}
         <li class="nav-item">
-            <a class="nav-link collapsed item3" id="applications" href="add-content">
+            <a class="nav-link collapsed item3" id="applications" href="/add-content">
                 <i class="bi bi-plus-square"></i>
                 <span>Add Content</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed item3" id="postview" href="GroziitDynamicSpace">
+            <a class="nav-link collapsed item3" id="postview" href="/GroziitDynamicSpace">
                 <i class="bi bi-view-list"></i>
                 <span>View Job Posting</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed item3" id="applications" href="GroziitApplicationsView">
+            <a class="nav-link collapsed item3" id="applications" href="/GroziitApplicationsView">
                 <i class="bi bi-card-list"></i>
                 <span>View Applications</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed item3" id="integrations" href="/GroziitIntegrations">
+                <i class="bi bi-link-45deg"></i>
+                <span>Integrations</span>
             </a>
         </li>
     {% endif %}
@@ -212,7 +218,7 @@
         <li class="nav-heading">Pages</li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="users-profile#profile-overview">
+            <a class="nav-link collapsed" href="/users-profile#profile-overview">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
@@ -226,7 +232,7 @@
         {#      </li><!-- End F.A.Q Page Nav -->#}
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="pages-contact">
+            <a class="nav-link collapsed" href="/pages-contact">
                 <i class="bi bi-envelope"></i>
                 <span>Contact</span>
             </a>
@@ -240,7 +246,7 @@
         {#      </li><!-- End Register Page Nav -->#}
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="logout">
+            <a class="nav-link collapsed" href="/logout">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>LogOut</span>
             </a>

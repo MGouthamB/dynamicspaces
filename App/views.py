@@ -515,6 +515,23 @@ def save_files(request):
         return ""
 
 
+def check_integration_credentials(url,email,password,api_key):
+    payload = json.dumps({
+        "email": email,
+        "password": password,
+        "api_key": api_key
+    })
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    if response.status_code==200:
+        return response.json()
+    return False
+
 def get_access_token():
     data = {
         'grant_type': 'client_credentials',
@@ -530,6 +547,11 @@ def payment_check(request, id="", email=""):
         if email == "":
             email = request.session['email']
         user = Profiles.objects.get(email=email)
+
+        #Need to remove - Temp Fix
+        if user.subscriber_id =="GROZIITADMIN":
+            return True
+
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + get_access_token(),
@@ -544,7 +566,7 @@ def payment_check(request, id="", email=""):
             'https://api-m.paypal.com/v1/billing/subscriptions/' + id,
             headers=headers)
 
-        print("subscriptionID:", id, subscriptions_response.json()["status"])
+        # print("subscriptionID:", id, subscriptions_response.json()["status"])
         if subscriptions_response.json()["status"] == "ACTIVE":
             user.subscriber_id = id
             user.subscriber = True
@@ -919,14 +941,41 @@ def GroziitDynamicSpace(request):
             if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
                 raise Exception
 
-            jobs = Jobs.objects.filter(posted_by=email)
-            return render(request, "GroziitJobs.html", {'jobs': jobs})
-
         except Exception as e:
             return HttpResponseRedirect('404')
         # return HttpResponseRedirect('pages-login')
     jobs = Jobs.objects.filter(posted_by=request.session['email'])
-    return render(request, "GroziitJobs.html", {'jobs': jobs})
+    integrated_jobs = []
+    try:
+        account_integrations = AccountIntegrations.objects.filter(account=request.session['email'])
+
+        for integration in account_integrations:
+            authentication_link, jobs_list_link = integration.integration.links.split(",")[:2]
+
+            access_token = check_integration_credentials(authentication_link,
+                                                         integration.email,
+                                                         integration.password,
+                                                         integration.api_key)['access_token']
+
+            while True:
+
+                headers = {
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json',
+                    'Authorization': f'Bearer {access_token}'
+                }
+
+                response = requests.request("GET", jobs_list_link, headers=headers).json()
+                integrated_jobs.extend(response['results'])
+                jobs_list_link = response['next']
+                if not jobs_list_link:
+                    break
+
+    except Exception as e:
+        print(e)
+        pass
+
+    return render(request, "GroziitJobs.html", {'jobs': jobs,'integrated_jobs':integrated_jobs,"jobs_count":len(jobs)+len(integrated_jobs)})
 
 
 @xframe_options_exempt
@@ -1083,8 +1132,8 @@ def cancelsub(request):
             json=json_data,
         )
 
-        print(user.subscriber_id)
-        print(response.status_code)
+        # print(user.subscriber_id)
+        # print(response.status_code)
 
         if response.status_code != 204:
             raise Exception
@@ -1493,8 +1542,6 @@ def GroziitApplicationsView(request):
 
     job_applications = JobApplication.objects.filter(job__posted_by=profile.email)
 
-    print(list(job_applications))
-
     return render(request, "GroziitApplicationsView.html",
                   {'job_applications': job_applications, 'username': profile.username, 'role': profile.job,
                    "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type})
@@ -1520,3 +1567,93 @@ def GroziitContentAPI(request):
     del content_data['id']
     del content_data['key']
     return JsonResponse(content_data)
+
+
+def GroziitIntegrations(request):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+
+    try:
+        profile = Profiles.objects.get(email=request.session['email'])
+
+        if profile.account_type == "Job":
+            integrations = Integration.objects.all()
+
+            account_integrations = AccountIntegrations.objects.filter(account=request.session['email'])
+
+            integrated_status = {}
+
+            for integration in integrations:
+                integrated_status[integration] = account_integrations.filter(integration=integration).exists()
+
+        return render(request, "GroziitIntegrationsView.html",
+                      {'username': profile.username, 'role': profile.job,"integrations":integrations,
+                       "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,
+                       "integrated_status": integrated_status})
+    except Exception as e:
+        print(e)
+        return HttpResponse("Unauthorized or issue, Please contact admin")
+
+def GroziitIntegrationsDetails(request,id):
+    if not logged_in(request):
+        return HttpResponseRedirect('pages-login')
+
+    if request.method=="POST":
+        try:
+            profile = Profiles.objects.get(email=request.session['email'])
+            if profile.account_type == "Job":
+                integration = Integration.objects.get(id=id)
+
+                try:
+                    account_integrations = AccountIntegrations.objects.get(account=request.session['email'],
+                                                                           integration=integration)
+                except AccountIntegrations.DoesNotExist:
+                    account_integrations = AccountIntegrations()
+                    account_integrations.integration = integration
+                    account_integrations.account = request.session['email']
+
+                if check_integration_credentials(
+                        integration.links.split()[0],
+                        request.POST["email"],
+                        request.POST["password"],
+                        request.POST["key"]):
+                    account_integrations.email = request.POST["email"]
+                    account_integrations.password = request.POST["password"]
+                    account_integrations.api_key = request.POST["key"]
+                    account_integrations.save()
+                    request.session[
+                        'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted Integration Details!</b>'
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                else:
+                    request.session[
+                        'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>Entered Invalid Credentials<br>Please try again!!</b>'
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        except Exception as e:
+            print(e)
+            request.session[
+                'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>There is an error with integration<br>Please try again!!</b>'
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+    try:
+        profile = Profiles.objects.get(email=request.session['email'])
+
+        if profile.account_type == "Job":
+            integration = Integration.objects.get(id=id)
+
+            try:
+                account_integrations = AccountIntegrations.objects.get(account=request.session['email'],integration=integration)
+            except AccountIntegrations.DoesNotExist:
+                account_integrations = None
+
+        return render(request, "GroziitIntegrationsViewDetails.html",
+                      {'username': profile.username, 'role': profile.job, "integration":integration,
+                       "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,
+                       "account_integrations": account_integrations})
+    except Exception as e:
+        print(e)
+        return HttpResponse("Unauthorized or issue, Please contact admin")
+
+
+def test(request):
+    return render(request,"test.html")

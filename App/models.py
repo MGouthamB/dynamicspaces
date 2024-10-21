@@ -53,3 +53,15 @@ class Content(models.Model):
     description = models.TextField()
     posted_by=models.CharField(max_length=500)
     key = models.CharField(max_length=500)
+
+class Integration(models.Model):
+    name = models.CharField(max_length=500)
+    logo = models.CharField(max_length=500)
+    links = models.TextField()
+
+class AccountIntegrations(models.Model):
+    integration = models.ForeignKey("Integration", on_delete=models.CASCADE)
+    account = models.CharField(max_length=500)
+    email = models.CharField(max_length=500)
+    password = models.CharField(max_length=500)
+    api_key = models.CharField(max_length=500)
