@@ -4,3 +4,5 @@ db.sqlite3
 /files/
 /test.html
 /test.py
+/venv
+_pycache_/
