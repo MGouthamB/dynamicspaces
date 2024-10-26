@@ -28,11 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# CORS_ORIGIN_ALLOW_ALL = DEBUG
 
-CORS_ALLOWED_ORIGINS = (
-  'http://localhost:5500',
-)
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,8 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'App',
     'ckeditor',
-    'corsheaders',
-
 ]
 
 MIDDLEWARE = [
@@ -57,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'App.middleware.RestrictSettingsAccessMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'GroziitJobs.urls'
