@@ -1566,7 +1566,9 @@ def GroziitContentAPI(request):
     del content_data['posted_by']
     del content_data['id']
     del content_data['key']
-    return JsonResponse(content_data)
+    response = JsonResponse(content_data)
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 def GroziitIntegrations(request):
