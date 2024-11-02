@@ -943,7 +943,7 @@
             }
 
             .search-bar {
-                width: auto;
+                width: 100%;
             }
         }
 
@@ -1378,12 +1378,12 @@
                                 </div>
                                 <div class="job-card-buttons">
                                     <button class="search-buttons card-buttons apply"
-                                            data="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}/postdetail?job={{ i.id }}&data={{ request.GET.data }}">
+                                            data="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}/postdetail/{{ job.id }}/{{ job.integration_id }}?data={{ request.GET.data }}">
                                         Apply
                                         Now
                                     </button>
                                     <button class="search-buttons card-buttons-msg apply" id="detail"
-                                            href="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}/postdetail?job={{ i.id }}&data={{ request.GET.data }}">
+                                            data="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}/postdetail/{{ job.id }}/{{ job.integration_id }}?data={{ request.GET.data }}">
                                         View More..
                                     </button>
                                 </div>

@@ -17,6 +17,7 @@ from django.utils.html import strip_tags
 import boto3
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 # from gdstorage.storage import GoogleDriveStorage
 
@@ -943,11 +944,13 @@ def GroziitDynamicSpace(request):
 
         except Exception as e:
             return HttpResponseRedirect('404')
+    else:
+        email = request.session['email']
         # return HttpResponseRedirect('pages-login')
-    jobs = Jobs.objects.filter(posted_by=request.session['email'])
+    jobs = Jobs.objects.filter(posted_by=email)
     integrated_jobs = []
     try:
-        account_integrations = AccountIntegrations.objects.filter(account=request.session['email'])
+        account_integrations = AccountIntegrations.objects.filter(account=email)
 
         for integration in account_integrations:
             authentication_link, jobs_list_link = integration.integration.links.split(",")[:2]
@@ -966,6 +969,9 @@ def GroziitDynamicSpace(request):
                 }
 
                 response = requests.request("GET", jobs_list_link, headers=headers).json()
+
+                for job in response['results']: job['integration_id'] = integration.integration.id
+
                 integrated_jobs.extend(response['results'])
                 jobs_list_link = response['next']
                 if not jobs_list_link:
@@ -976,6 +982,78 @@ def GroziitDynamicSpace(request):
         pass
 
     return render(request, "GroziitJobs.html", {'jobs': jobs,'integrated_jobs':integrated_jobs,"jobs_count":len(jobs)+len(integrated_jobs)})
+
+
+@xframe_options_exempt
+def integration_detail(request,id,integration_id):
+    if not logged_in(request):
+        try:
+            data = request.GET["data"]
+            fernet = Fernet(iframe)
+            data = fernet.decrypt(data.encode()).decode()
+
+            email, password = data.split("~")
+
+            profile = Profiles.objects.get(email=email)
+
+            company = profile.company
+
+            if not payment_check(request, id=profile.subscriber_id, email=email):
+                raise Exception
+
+            if profile.subscriber == False:
+                raise Exception
+
+            fernet = Fernet(profile.key.encode('utf-8'))
+
+            if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
+                raise Exception
+
+        except Exception as e:
+            return HttpResponseRedirect('404')
+
+    else:
+        email = request.session['email']
+        profile = Profiles.objects.get(email=email)
+        company = profile.company
+    try:
+        integration = AccountIntegrations.objects.get(account=email,integration_id=integration_id)
+
+        authentication_link, jobs_list_link,job_details_link,posted_by_link = integration.integration.links.split(",")[:4]
+
+        access_token = check_integration_credentials(authentication_link,
+                                                     integration.email,
+                                                     integration.password,
+                                                     integration.api_key)['access_token']
+
+        headers = {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+            'Authorization': f'Bearer {access_token}'
+        }
+
+        response = requests.request("GET", job_details_link+id, headers=headers).json()
+
+        posted_by = requests.request("GET", posted_by_link+response.get('posted_by'), headers=headers).json().get('email_id')
+
+        job={
+            'title': response.get('position_title'),
+            'company': company,
+            'description': response.get('requisition_description'),
+            'location': f'{response.get("state")},{response.get("country")}'.strip(),
+            'eemail': posted_by,
+            'expire_in_days': response.get('closing_date').strip(),
+            'time': response.get('posted'),
+            'need_files': True,
+            'integration_id': integration_id,
+            'id': id
+        }
+
+    except Exception as e:
+        print(e)
+        return HttpResponseRedirect('404')
+
+    return render(request, "detail.html", {"job": job, "msg": message_check(request), 'integration': True})
 
 
 @xframe_options_exempt
@@ -1523,7 +1601,308 @@ def dynamicspace_form(request):
             'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>There is an error submitting the {profile.account_type}<br>Please try again!!</b>'
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@xframe_options_exempt
+@csrf_exempt
+def integrations_form(request,id,integration_id):
+    try:
+        email = ""
+        if not logged_in(request):
+            data = request.GET["data"]
+            fernet = Fernet(iframe)
+            data = fernet.decrypt(data.encode()).decode()
 
+            email, password = data.split("~")
+
+            profile = Profiles.objects.get(email=email)
+
+            if not payment_check(request, id=profile.subscriber_id, email=email):
+                raise Exception
+
+            if profile.subscriber == False:
+                raise Exception
+
+            fernet = Fernet(profile.key.encode('utf-8'))
+
+            if (profile.password != fernet.decrypt(password.encode()).decode('utf-8')):
+                raise Exception
+        else:
+            email = request.session['email']
+
+        profile = Profiles.objects.get(email=email)
+        POSTdata = ""
+        for i in request.POST.items():
+            if i[0] in ["csrfmiddlewaretoken","formname"]: continue
+            POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
+
+        if profile.account_type == "Job":
+            integration = AccountIntegrations.objects.get(account=email, integration_id=integration_id)
+
+            authentication_link, jobs_list_link, job_details_link, posted_by_link = integration.integration.links.split(
+                ",")[:4]
+
+            access_token = check_integration_credentials(authentication_link,
+                                                         integration.email,
+                                                         integration.password,
+                                                         integration.api_key)['access_token']
+
+            headers = {
+                'Content-Type': 'application/json',
+                'accept': 'application/json',
+                'Authorization': f'Bearer {access_token}'
+            }
+
+            job_details = requests.request("GET", job_details_link + id, headers=headers).json()
+
+            posted_by = requests.request("GET", posted_by_link + job_details.get('posted_by'), headers=headers).json().get(
+                'email_id')
+
+            application = IntegrationJobApplication()
+            application.title = job_details.get('position_title')
+            application.eemail = posted_by
+            application.name = request.POST['name']
+            application.email = request.POST['email']
+            application.posted_by = email
+            timestamp = str(int(time.time() * 1000))
+            file = request.FILES['resume']
+
+            if (file.size / (1024 * 1024) > 2) or (not file.name.endswith((".pdf", ".doc", ".docx"))):
+                request.session[
+                    'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>Please Upload a valid file.</b>'
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            file_name = timestamp + "_" + file.name
+            s3_client.upload_fileobj(file, 'dynamic-spaces-resumes',f'{profile.company.lower()}/{file_name}')
+            application.resume_link = f"https://dynamic-spaces-resumes.s3.amazonaws.com/{profile.company.lower()}/{file_name}"
+            application.save()
+            employee = f'''
+
+                        <body>
+                            <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                <tr>
+                                    <td align="center">
+                                        <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <!-- Email Body -->
+                                            <tr>
+                                                <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                                                    <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <!-- Body content -->
+                                                        <tr>
+                                                            <td class="content-cell">
+                                                                <div class="f-fallback">
+                                                                    <h1>Hello {request.POST['name']},</h1>
+                                                                    <p>Application acknowledgment for {job_details.get('position_title')} at {profile.company}</p>
+                                                                    <!-- Action -->
+                                                                    <table class="attributes" width="100%" cellpadding="0" cellspacing="0"
+                                                                        role="presentation">
+                                                                        <tr>
+                                                                            <td class="attributes_content">
+                                                                                <table width="100%" cellpadding="0" cellspacing="0"
+                                                                                    role="presentation">
+                                                                                    <tr>
+                                                                                        <td class="attributes_item">
+                                                                                            Thank you for providing the information. This mail is an acknowledgement that we have received your data.
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+
+                                                                    <table class="body-action" align="center" width="100%" cellpadding="0"
+                                                                        cellspacing="0" role="presentation">
+                                                                        <tr>
+                                                                            <td align="center">
+                                                                                <!-- Border based button
+                                   https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                                                    role="presentation">
+                                                                                    <tr>
+                                                                                        <td align="center">
+                                                                                            <a href="{request.META.get('HTTP_REFERER')}"
+                                                                                                class="f-fallback button" target="_blank">Visit
+                                                                                                Website</a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+
+                                                                    <p>If you have any questions, feel free to <a
+                                                                            href="mailto:{posted_by}">Contact the mail address of the
+                                                                            sender</a>. (Click on the link to contact)</p>
+                                                                    <p>Thanks,
+                                                                        <br>Team {profile.company}
+                                                                    </p>
+
+                                                                    <!-- Sub copy -->
+                                                                    <table class="body-sub" role="presentation" align="center">
+                                                                        <tr>
+                                                                            <td align="center">
+                                                                                <p class="f-fallback sub"><strong>Mail generated by </strong><a
+                                                                                        href="https://groziit.com"><img
+                                                                                            src="https://i.imgur.com/OUzZa5Z.png"
+                                                                                            style="width: 60px;" /></a></p>
+
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td class="content-cell" align="center">
+                                                                <p class="f-fallback sub align-center">&copy; Copyright {profile.company}. All Rights
+                                                                    Reserved</p>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </body>
+
+                        </html>'''
+            employer = f'''<body>
+                        <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td align="center">
+                                    <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                    
+                                        <!-- Email Body -->
+                                        <tr>
+                                            <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                                                <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                    role="presentation">
+                                                    <!-- Body content -->
+                                                    <tr>
+                                                        <td class="content-cell">
+                                                            <div class="f-fallback">
+                                                                <h1>Welcome, {profile.company}</h1>
+                                                                <p>New Job Application submitted for for {job_details.get('position_title')} at {profile.company}</p>
+                                                                <!-- Action -->
+                                                                <table class="attributes" width="100%" cellpadding="0" cellspacing="0"
+                                                                    role="presentation">
+                                                                    <tr>
+                                                                        <td class="attributes_content">
+                                                                            <table width="100%" cellpadding="0" cellspacing="0"
+                                                                                role="presentation">
+                                                                                <tr>
+                                                                                    <td class="attributes_item">
+                                                                                        <span class="f-fallback">
+                                                                                        {POSTdata} <br/>
+                                                                                        <strong>Resume Link:</strong> {application.resume_link}
+                                                                                        </span>
+                                                                                    </td>
+                                                                                </tr>
+
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+
+                                                                <table class="body-action" align="center" width="100%" cellpadding="0"
+                                                                    cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <!-- Border based button
+                               https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
+                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                                                role="presentation">
+                                                                                <tr>
+                                                                                    <td align="center">
+                                                                                        <a href="https://groziit.pythonanywhere.com/"
+                                                                                            class="f-fallback button" target="_blank">Visit
+                                                                                            Website</a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+
+                                                                <p>If you have any questions, feel free to <a
+                                                                        href="mailto:contact@groziit.com">Contact the mail address of the
+                                                                        sender</a>. (Click on the link to contact)</p>
+                                                                <p>Thanks,
+                                                                    <br>Team GROZiiT
+                                                                </p>
+
+                                                                <!-- Sub copy -->
+                                                                <table class="body-sub" role="presentation" align="center">
+                                                                    <tr>
+                                                                        <td align="center">
+                                                                            <p class="f-fallback sub"><strong>Mail generated by </strong><a
+                                                                                    href="https://groziit.com"><img
+                                                                                        src="https://i.imgur.com/OUzZa5Z.png"
+                                                                                        style="width: 60px;" /></a></p>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0"
+                                                    role="presentation">
+                                                    <tr>
+                                                        <td class="content-cell" align="center">
+                                                            <p class="f-fallback sub align-center">&copy; Copyright GROZiiT. All Rights
+                                                                Reserved</p>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+
+                    </html>'''
+
+            send_mail(
+                subject='Thanks for Applying',
+                html_message=message1 + employee,
+                message=strip_tags(message1 + employee),
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[request.POST['email'].lower()])
+            send_mail(
+                subject='New job Application submitted',
+                html_message=message1 + employer,
+                message=strip_tags(message1 + employer),
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[request.POST['email'].lower()])
+
+            request.session[
+                'message'] = f'<b> <i class="bi bi-check-circle-fill" style="color: green"></i> Successfully submitted the {profile.account_type} Application!</b>'
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    except Exception as e:
+        print(e)
+        request.session[
+            'message'] = f'<b> <i class="bi bi-x-circle-fill" style="color: red"></i>There is an error submitting the {profile.account_type}<br>Please try again!!</b>'
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def pages_contact(request):
     if not logged_in(request):
@@ -1541,15 +1920,23 @@ def GroziitApplicationsView(request):
     profile = Profiles.objects.get(email=request.session['email'])
 
     job_applications = JobApplication.objects.filter(job__posted_by=profile.email)
+    integrated_applications = IntegrationJobApplication.objects.filter(posted_by=profile.email)
 
     return render(request, "GroziitApplicationsView.html",
-                  {'job_applications': job_applications, 'username': profile.username, 'role': profile.job,
+                  {'job_applications': job_applications, "integrated_applications":integrated_applications,
+                   'username': profile.username, 'role': profile.job,
                    "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type})
 
-
+@require_http_methods(["GET", "OPTIONS"])
 def GroziitContentAPI(request):
-    content_id = request.GET.get('id')
+    if request.method == "OPTIONS":
+        response = JsonResponse({"status": "OK"})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+        return response
 
+    content_id = request.GET.get('id')
     if not content_id:
         return JsonResponse({'error': 'ID parameter is missing'}, status=400)
 
@@ -1561,6 +1948,7 @@ def GroziitContentAPI(request):
                 return JsonResponse({'error': 'Invalid or missing token'}, status=401)
     except Content.DoesNotExist:
         return JsonResponse({'error': 'Content not found'}, status=404)
+
 
     content_data = model_to_dict(content)
     del content_data['posted_by']

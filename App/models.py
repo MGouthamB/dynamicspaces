@@ -41,11 +41,18 @@ class JobApplication(models.Model):
     address = models.TextField()
     resume_link = models.URLField()
 
+class IntegrationJobApplication(models.Model):
+    title = models.CharField(max_length=100,blank=False)
+    eemail = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,blank=False)
+    email = models.EmailField(blank=False)
+    posted_by = models.EmailField(blank=False)
+    resume_link = models.URLField()
+
 class FormData(models.Model):
     data = models.CharField(max_length=2000)
     posted_for = models.CharField(max_length=500)
     time = models.DateField(editable=False, default=timezone.now)
-    form_name = models.CharField(max_length=500)
 
 class Content(models.Model):
     title = models.CharField(max_length=500)

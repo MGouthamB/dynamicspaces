@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1102,18 +1103,15 @@
             display: none;
         }
     </style>
-    <script>
-        {#$(document).ready(function() {#}
-        {#    var height =  $(".job-bg").height()+$(".job-logos").height()+$(".job-title-wrapper").height()+$(".job-subtitle-wrapper").height()+$(".explain-bar").height()+$(".overview-text").height()+500;#}
-        {#    window.parent.postMessage({type: 'iframeHeight', height: height}, '*');#}
-        {##}
-    </script>
 </head>
 <body>
 <div class="job-explain">
+    {% if not job.background_img_url %}
+        <br>
+    {% endif %}
     <img class="job-bg" alt="" src="{{ job.background_img_url }}">
     <div class="job-logos">
-        <img src="{{ job.logo_img_url }}" style="object-fit: cover;width: 66px;height:66px;background: whitesmoke">
+        <img src="{% if job.logo_img_url %}{{ job.logo_img_url }}{% else %}{% static "assets/img/buildings.svg" %}{% endif %}" style="object-fit: cover;width: 66px;height:66px;background: whitesmoke">
     </div>
     <div class="job-explain-content">
         <div class="job-title-wrapper">
@@ -1125,7 +1123,7 @@
         <div class="job-subtitle-wrapper">
             <div class="company-name">{{ job.company }}<span class="comp-location">{{ job.location }}</span>
             </div>
-            <div class="posted">Posted on {{ job.time }}{#  <span class="app-number">98 Application</span>#}
+            <div class="posted">Posted : {{ job.time }}{#  <span class="app-number">98 Application</span>#}
             </div>
         </div>
         <div class="explain-bar">
@@ -1156,7 +1154,7 @@
                     APPLICATION FORM</h5>
 
                 <!-- Floating Labels Form -->
-                <form class="row g-3" method="post" id="application" action="dynamicspace-form?data={{ request.GET.data }}"
+                <form class="row g-3" method="post" id="application" action="../../dynamicspace-form{% if integration %}/{{ job.id }}/{{ job.integration_id }}{% endif %}?data={{ request.GET.data }}"
                       enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="col-md-12">

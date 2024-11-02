@@ -65,7 +65,7 @@
                   <table class="table table-borderless datatable">
                     <thead>
                       <tr>
-                        <th scope="col">#ID</th>
+{#                        <th scope="col">#ID</th>#}
                         <th scope="col">Job Title</th>
                         <th scope="col">Employer Email</th>
                         <th scope="col">Employee Name</th>
@@ -76,9 +76,19 @@
                     <tbody class="jobs_list">
                     {% for i in job_applications %}
                       <tr>
-                        <th scope="row">#{{ i.id }}</th>
+{#                        <th scope="row">#{{ forloop.counter }}</th>#}
                         <td >{{ i.job.title}}</td>
                         <td>{{ i.job.eemail }}</td>
+                        <td>{{ i.name }}</td>
+                          <td>{{ i.email }}</td>
+                          <td style="align-content: center"><a href="{{ i.resume_link }}" class="text-primary"><i class="bi bi-eye text-primary" ></i></a></td>
+                      </tr>
+                    {% endfor %}
+                    {% for i in integrated_applications %}
+                      <tr>
+{#                        <th scope="row">#{{ forloop.counter }}</th>#}
+                        <td >{{ i.title}}</td>
+                        <td>{{ i.eemail }}</td>
                         <td>{{ i.name }}</td>
                           <td>{{ i.email }}</td>
                           <td style="align-content: center"><a href="{{ i.resume_link }}" class="text-primary"><i class="bi bi-eye text-primary" ></i></a></td>
