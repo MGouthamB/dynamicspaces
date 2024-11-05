@@ -4,7 +4,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link item1" id="Dashboard" href="/index">
+            <a class="nav-link collapsed item1" id="Dashboard" href="/index">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
@@ -18,7 +18,7 @@
         </li>
     {% if actype == "Job" %}
         <li class="nav-item">
-            <a class="nav-link collapsed item3" id="applications" href="/add-content">
+            <a class="nav-link collapsed item3" id="content" href="/add-content">
                 <i class="bi bi-plus-square"></i>
                 <span>Add Content</span>
             </a>
@@ -218,7 +218,7 @@
         <li class="nav-heading">Pages</li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="/users-profile#profile-overview">
+            <a class="nav-link collapsed" href="/users-profile#profile-overview" id="profile">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
@@ -232,7 +232,7 @@
         {#      </li><!-- End F.A.Q Page Nav -->#}
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="/pages-contact">
+            <a class="nav-link collapsed" href="/pages-contact" id="contact">
                 <i class="bi bi-envelope"></i>
                 <span>Contact</span>
             </a>
