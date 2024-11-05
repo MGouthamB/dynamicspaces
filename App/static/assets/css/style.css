@@ -1105,6 +1105,7 @@ h6 {
 --------------------------------------------------------------*/
 .contact .info-box {
   padding: 28px 30px;
+  width: 100%;
 }
 
 .contact .info-box i {
