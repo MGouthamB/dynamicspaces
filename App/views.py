@@ -656,7 +656,7 @@ def register(request):
 
 def login(request):
     try:
-        profile = Profiles.objects.get(email=request.POST['email'])
+        profile = Profiles.objects.get(email__iexact=request.POST['email'])
         if (profile.password == request.POST['password']):
             request.session['email'] = profile.email
             fernet = Fernet(profile.key.encode('utf-8'))
@@ -667,7 +667,7 @@ def login(request):
     except Exception as e:
         print(e)
         request.session[
-            'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Incorret Credentials<br>Please try again.</b>'
+            'message'] = '<b> <i class="bi bi-x-circle-fill" style="color: red"></i> Incorrect Credentials Please try again</b>'
         return HttpResponseRedirect('pages-login')
 
 
