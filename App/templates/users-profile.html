@@ -139,35 +139,35 @@
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">User Name</label>
+                                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">User Name<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="username" type="text" class="form-control" id="username"
-                                                   value="{{ profile.username }}">
+                                                   value="{{ profile.username }}" required>
                                         </div>
                                     </div>
 
 
                                     <div class="row mb-3">
-                                        <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
+                                        <label for="company" class="col-md-4 col-lg-3 col-form-label">Company<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="company" type="text" class="form-control" id="company"
-                                                   value="{{ profile.company }}">
+                                                   value="{{ profile.company }}" required>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
+                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="job" type="text" class="form-control" id="Job"
-                                                   value="{{ profile.job }}">
+                                                   value="{{ profile.job }}" required>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="email" type="email" class="form-control" id="Email"
-                                                   value="{{ profile.email }}" readonly>
+                                                   value="{{ profile.email }}" readonly required>
                                         </div>
                                     </div>
 
@@ -256,28 +256,28 @@
 
                                     <div class="row mb-3">
                                         <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
-                                            Password</label>
+                                            Password<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="password" type="password" class="form-control"
-                                                   id="currentPassword">
+                                                   id="currentPassword" required>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New
-                                            Password</label>
+                                            Password<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="newpassword" type="password" class="form-control"
-                                                   id="newPassword">
+                                                   id="newPassword" required>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New
-                                            Password</label>
+                                            Password<span style="color: red">*</span></label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="renewpassword" type="password" class="form-control"
-                                                   id="renewPassword">
+                                                   id="renewPassword" required>
                                         </div>
                                     </div>
 

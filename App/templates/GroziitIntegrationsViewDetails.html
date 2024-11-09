@@ -49,21 +49,21 @@
 
                     {% if actype == "Job" %}
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="email" type="text" class="form-control" id="email" value="{{ account_integrations.email }}" required>
                             </div>
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Password</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Password<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="password" type="text" class="form-control" id="password" value="{{ account_integrations.password }}" required>
                             </div>
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">API Key</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">API Key<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="key" type="text" class="form-control" id="key" value="{{ account_integrations.api_key }}" required>
                             </div>
