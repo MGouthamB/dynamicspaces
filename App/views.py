@@ -1361,26 +1361,6 @@ def dynamicspace_form(request):
                                                                         </tr>
                                                                     </table>
 
-                                                                    <table class="body-action" align="center" width="100%" cellpadding="0"
-                                                                        cellspacing="0" role="presentation">
-                                                                        <tr>
-                                                                            <td align="center">
-                                                                                <!-- Border based button
-                                   https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
-                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                                                                    role="presentation">
-                                                                                    <tr>
-                                                                                        <td align="center">
-                                                                                            <a href="{request.META.get('HTTP_REFERER')}"
-                                                                                                class="f-fallback button" target="_blank">Visit
-                                                                                                Website</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-
                                                                     <p>If you have any questions, feel free to <a
                                                                             href="mailto:{job.eemail}">Contact the mail address of the
                                                                             sender</a>. (Click on the link to contact)</p>
@@ -1481,7 +1461,7 @@ def dynamicspace_form(request):
                                                                                 role="presentation">
                                                                                 <tr>
                                                                                     <td align="center">
-                                                                                        <a href="https://groziit.pythonanywhere.com/"
+                                                                                        <a href="{request.META.get('HTTP_REFERER')}"
                                                                                             class="f-fallback button" target="_blank">Visit
                                                                                             Website</a>
                                                                                     </td>
@@ -1710,26 +1690,6 @@ def integrations_form(request,id,integration_id):
                                                                         </tr>
                                                                     </table>
 
-                                                                    <table class="body-action" align="center" width="100%" cellpadding="0"
-                                                                        cellspacing="0" role="presentation">
-                                                                        <tr>
-                                                                            <td align="center">
-                                                                                <!-- Border based button
-                                   https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
-                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                                                                    role="presentation">
-                                                                                    <tr>
-                                                                                        <td align="center">
-                                                                                            <a href="{request.META.get('HTTP_REFERER')}"
-                                                                                                class="f-fallback button" target="_blank">Visit
-                                                                                                Website</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-
                                                                     <p>If you have any questions, feel free to <a
                                                                             href="mailto:{posted_by}">Contact the mail address of the
                                                                             sender</a>. (Click on the link to contact)</p>
@@ -1824,7 +1784,7 @@ def integrations_form(request,id,integration_id):
                                                                                 role="presentation">
                                                                                 <tr>
                                                                                     <td align="center">
-                                                                                        <a href="https://groziit.pythonanywhere.com/"
+                                                                                        <a href="{request.META.get('HTTP_REFERER')}"
                                                                                             class="f-fallback button" target="_blank">Visit
                                                                                             Website</a>
                                                                                     </td>
