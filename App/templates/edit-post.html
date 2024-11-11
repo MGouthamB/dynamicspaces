@@ -61,7 +61,7 @@
                     {#                    </div>#}
                     {% if actype == "Job" %}
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Title</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Title<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
                                        required>
@@ -69,7 +69,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Company Name</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Company Name<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="company" type="text" class="form-control" id="company"
                                        value="{{ job.company }}" required>
@@ -77,7 +77,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Description Gist</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Description Gist<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="sdescription" type="text" class="form-control" id="sdescription"
                                        value="{{ job.sdescription }}"
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="about" class="col-md-4 col-lg-3 col-form-label">Job Description</label>
+                            <label for="about" class="col-md-4 col-lg-3 col-form-label">Job Description<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <div id="toolbar-container">
                                 <textarea name="ckdescription" id="ckdescription"
@@ -102,7 +102,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Location</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Location<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="location" type="text" class="form-control" id="location"
                                        value="{{ job.location }}" required>
@@ -110,7 +110,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Employer Email</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Employer Email<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="eemail" type="text" class="form-control" id="eemail"
                                        value="{{ job.eemail }}" required>
@@ -144,10 +144,10 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Job Due Date<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="expire_in_days" type="date" class="form-control" id="expire_in_days"
-                                       value="{{ job.expire_in_days|date:"Y-m-d" }}">
+                                       value="{{ job.expire_in_days|date:"Y-m-d" }}" required>
                             </div>
                         </div>
                     {% endif %}
@@ -155,7 +155,7 @@
                     {% if actype == "Form" %}
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">{{ actype }} Title</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">{{ actype }} Title<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
                                        required>
@@ -313,7 +313,7 @@
                         </style>
 
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Images Title</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Images Title<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="title" type="text" class="form-control" id="title" value="{{ job.title }}"
                                        required>
@@ -405,6 +405,11 @@
                         <button type="submit" class="btn btn-primary" id="submit">Edit Job</button>
                         <script>
                             $("#submit").click(function () {
+                                if (CKEDITOR.instances['ckdescription'].getData() === '') {
+                                    alert('Please make sure you filled all the fields..');
+                                    event.preventDefault();
+                                    return false;
+                                }
                                 $("#description").val(CKEDITOR.instances['ckdescription'].getData());
                             });
                         </script>

@@ -61,13 +61,13 @@
 
                     {% if actype == "Job" %}
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Content Title</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Content Title<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="title" type="text" class="form-control" id="title" value="{{ content.title }}" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Content Sub Title</label>
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Content Sub Title<span style="color: red">*</span></label>
                             <div class="col-md-8 col-lg-9">
                                 <input name="sub-title" type="text" class="form-control" id="sub-title" value="{{ content.subtitle }}"
                                        required>
