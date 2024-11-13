@@ -181,7 +181,6 @@
 
         .wrapper {
             width: 100%;
-            display: flex;
             flex-direction: column;
             flex-grow: 1;
             scroll-behavior: smooth;
@@ -1227,12 +1226,6 @@
         }
 
     </style>
-    <script>
-        $(document).ready(function () {
-            var height = $(".job").height() + $(".wrapper").height() + $(".main-container").height();
-            window.parent.postMessage({type: 'iframeHeight', height: height}, '*');
-        });
-    </script>
 </head>
 <body>
 <div id="popup-article" class="popup hidescroll" style="overflow:hidden">
@@ -1302,7 +1295,7 @@
             {#            </div>#}
             <button class="search-button">Find Job</button>
         </div>
-        <div class="main-container">
+        <div class="main-container" id="main-container">
             <div class="searched-jobs">
                 <div class="searched-bar">
                     <div class="searched-show" id="njobs">Showing {{ jobs_count }} Jobs</div>
@@ -1400,10 +1393,6 @@
 
     $(document).ready(function () {
 
-        function sendHeight() {
-            window.parent.postMessage({height: $('body').prop('scrollHeight')}, '*');
-        }
-
         var initial_height = 0;
 
         $(".apply").click(function () {
@@ -1426,6 +1415,16 @@
             iframe.height(iframe[0].contentWindow.document.body.scrollHeight);
             window.parent.postMessage({height: $('body').prop('scrollHeight') + 5}, '*');
         });
+
+        let previousHeight = 0;
+
+        setInterval(() => {
+            const currentHeight = $('#main-container').height();
+            if (currentHeight !== previousHeight && currentHeight>=0) {
+                previousHeight = currentHeight;
+                window.parent.postMessage({ height: currentHeight+150}, '*');
+            }
+        }, 5);
 
     });
 
