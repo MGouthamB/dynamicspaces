@@ -705,7 +705,7 @@ def index(request):
     #Adding 1st form field data as preview
     for form_data in datas:
         #print(form_data.data.split("<br>", 1)[0].split(":")[1])
-        form_data.preview = form_data.data.split("<br><b>")[4].split("<br>")[1]
+        form_data.preview = form_data.data.split("<br><b>")[0].split("<br>")[1]
 
 
     return render(request, "index.html",
