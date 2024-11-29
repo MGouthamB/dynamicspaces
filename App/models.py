@@ -53,6 +53,7 @@ class FormData(models.Model):
     data = models.CharField(max_length=2000)
     posted_for = models.CharField(max_length=500)
     time = models.DateField(editable=False, default=timezone.now)
+    form_name = models.CharField(max_length=500)
 
 class Content(models.Model):
     title = models.CharField(max_length=500)

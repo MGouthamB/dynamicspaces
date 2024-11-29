@@ -705,9 +705,11 @@ def index(request):
     #Adding 1st form field data as preview
     for form_data in datas:
         #print(form_data.data.split("<br>", 1)[0].split(":")[1])
-        form_data.preview = form_data.data.split("<br>", 1)[0].split(":")[1]
+        form_data.preview = form_data.data.split("<br><b>")[4].split("<br>")[1]
+
+
     return render(request, "index.html",
-                  {'jobs': jobs,'datas':datas, 'username': profile.username, 'role': profile.job,
+                  {'jobs': jobs,'datas': datas, 'username': profile.username, 'role': profile.job,
                    "contents": contents,
                    "pp": profile.img_url, "msg": message_check(request), "actype": profile.account_type,
                    "i_frame": iframe_data})
@@ -1297,7 +1299,9 @@ def dynamicspace_form(request):
         POSTdata = ""
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
-            POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
+            POSTdata += (
+               "<b>" + i[0].capitalize() + "</b>: <br>" + i[1] + "<br>"
+            )
 
         if profile.account_type == "Job":
             job = Jobs.objects.get(id=request.POST['jobid'])
@@ -1538,27 +1542,8 @@ def dynamicspace_form(request):
             data.posted_for = email
             data.form_name = request.POST['formname']
             # print(request.POST['formname'], request.POST['phone_number'])
-            #TODO: make the below message generic
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': 'Hk3IqZ3crESzStZOh3wfdlKLrta4K3R',
-            }
-            json_data = {
-                 'message': "🎉 Thank you for enrolling to Sitara Grand's opening deals. Get a chance to win any one of the deal listed in our website.",
-                 'name': "Sitara Grand",
-                 'branch': "25691 Smotherman Rd, Suit No:220, Frisco, Texas -75034",
-                 'number': request.POST['Phone Number'],
-            }
-            response = requests.post(
-                'https://revuesmart.herokuapp.com/users/message',
-                headers=headers,
-                json=json_data,
-            )
-            print(response.text, "response")
-            if(response.text == "sent"):
-                data.save()
-            else:
-                raise Exception
+            #TODO: send email to user
+            data.save()
         #     # Get the file from the request
         #     file = request.FILES['files']
         #
@@ -1612,7 +1597,7 @@ def integrations_form(request,id,integration_id):
         POSTdata = ""
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
-            POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
+            POSTdata += "<b>" + i[0].capitalize() + "</b>: <br/>" + i[1] + "<br>"
 
         if profile.account_type == "Job":
             integration = AccountIntegrations.objects.get(account=email, integration_id=integration_id)
