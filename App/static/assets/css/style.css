@@ -1271,3 +1271,20 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+/*--------------------------------------------------------------
+# Form Table css
+--------------------------------------------------------------*/
+
+.right-arrow{
+  width: 20px;
+}
+
+.right-arrow:hover{
+  transform: translate( 50%, 0);
+
+}
+
+tbody tr:last-child{
+  border: none;
+}

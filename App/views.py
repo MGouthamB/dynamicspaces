@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.shortcuts import render
 from .models import *
 from cryptography.fernet import Fernet
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 import random
 import datetime
 import requests
@@ -1297,10 +1299,13 @@ def dynamicspace_form(request):
 
         profile = Profiles.objects.get(email=email)
         POSTdata = ""
+        user_email = ""
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
+            if i[0] == "email":
+                user_email = i[1]
             POSTdata += (
-               "<b>" + i[0].capitalize() + "</b>: <br>" + i[1] + "<br>"
+               "<b>" + i[0].capitalize() + "</b>: " + i[1] + "<br>"
             )
 
         if profile.account_type == "Job":
@@ -1542,7 +1547,8 @@ def dynamicspace_form(request):
             data.posted_for = email
             data.form_name = request.POST['formname']
             # print(request.POST['formname'], request.POST['phone_number'])
-            #TODO: send email to user
+            send_email('drd_registration.html', "Thank you for your registration!", POSTdata, user_email)
+            print(user_email, "sending email to user...")
             data.save()
         #     # Get the file from the request
         #     file = request.FILES['files']
@@ -1989,6 +1995,363 @@ def GroziitIntegrationsDetails(request,id):
         print(e)
         return HttpResponse("Unauthorized or issue, Please contact admin")
 
+# Blog rendering function
+@require_http_methods(["GET", "OPTIONS"])
+def getBlog(request, slug, id):
+    print(slug, id)
+    if request.method == "OPTIONS":
+        response = JsonResponse({"status": "OK"})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+        return response
+
+    blog = '''
+        <!DOCTYPE html>
+        <html lang="en">
+        
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Vexon || Blog Details Standard</title>
+        
+            <!--=====FAB ICON=======-->
+        
+            <!--=====CSS=======-->
+        
+        
+            <!--=====JQUERY=======-->
+        </head>
+        
+        <body>
+            <!--===== BLOG DETAILS AREA START=======-->
+            <div class="blog-details1-all sp">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="blog-page3-single-box">
+                                <div class="heading1">
+                                    <div class="social-area mb-16">
+                                        <div class="author-area">
+                                            <div class="author">
+                                                <div class="author-tumb">
+                                                    <img src="https://i.imgur.com/wg61NBf.png" alt="vexon" />
+                                                </div>
+                                                <a href="author.html" class="author-text">Kimberly Mastrangelo</a>
+                                            </div>
+                                            <div class="date">
+                                                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+          <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
+          <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+        </svg> Oct 26, 2024 </a>
+                                            </div>
+                                        </div>
+                                        <a href="categories.html" class="time"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+        </svg> 3 min read</a>
+                                    </div>
+                                    <h2>The Art of Building a Strong Personal Brand on Social Media</h2>
+                                    <p class="mt-16">In today’s digital age, building a strong personal brand on social media is more crucial than ever. A compelling personal brand not only establishes your credibility and trustworthiness but also opens doors to new opportunities, connects you with like-minded individuals,</p>
+                                </div>
+        
+                                <div class="thumbnail image-anime _relative mt-20">
+                                    <img src="https://vexon-html-demo.vercel.app/assets/img/blog/blog-details-image1.png" alt="vexon" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="details content-area mt-40">
+                                <article>
+                                    <div class="heading1">
+                                        <p>In today’s digital age, building a strong personal brand on social media is more crucial than ever. A compelling personal brand not only establishes your credibility and trustworthiness but also opens doors to new opportunities, connects you with like-minded individuals, and can even generate income. With billions of users on social media platforms, carving out a unique space for yourself may seem daunting, but with the right strategies, you can create a brand that resonates.</p>
+                                        <h3 class="mt-40">Understanding Your Personal Brand</h3>
+                                        <p class="mt-16">Your personal brand is a reflection of who you are, what you stand for, and how you want others to perceive you. Before diving into the social media world, take some time to reflect on your values, interests, and goals. Ask yourself: What do I want to be known for? What are my unique strengths and passions? Who is my target audience?</p>
+                                        <p class="mt-16">Once you have clarity on these questions, you can begin crafting a brand that authentically represents you. Remember, authenticity is key—people connect with genuine voices, so stay true to who you are and avoid the temptation to imitate others.</p>
+                                    </div>
+                                </article>
+        
+                                <article>
+                                    <div class="heading1 mt-40">
+                                        <h3>Choosing the Right Platforms</h3>
+                                        <p class="mt-16">Different social media platforms serve different purposes, and each has its own user demographics. Selecting the right platforms for your brand is essential. For instance:</p>
+                                        <p class="mt-16 p-with-sapn"><span>LinkedIn:</span> is ideal for professionals seeking to build a network within their industry.</p>
+                                        <p class="mt-10 p-with-sapn"><span>Instagram:</span> is highly visual and works well for brands related to lifestyle, fashion, travel, and more.</p>
+                                        <p class="mt-10 p-with-sapn"><span>Twitter:</span> is great for sharing quick thoughts, opinions, and joining conversations on trending topics.</p>
+                                        <p class="mt-10 p-with-sapn"><span>TikTok:</span> has a young, highly engaged audience and is excellent for creating entertaining, relatable short videos.</p>
+                                        <p class="mt-20">Choose platforms that align with your goals and where your target audience is most active. Instead of spreading yourself too thin across all platforms, focus on two or three and consistently deliver quality content.</p>
+                                    </div>
+                                </article>
+        
+                                <article>
+                                    <div class="heading1 mt-50">
+                                        <h3>Crafting a Consistent Brand Image</h3>
+                                        <p class="mt-16">Your brand image is a combination of your visuals, tone, and messaging. Consistency across your profile photos, color scheme, and typography helps establish a memorable and professional look. Choose profile and cover photos that reflect your personality and niche.</p>
+                                        <p class="mt-16">Beyond visuals, consider the tone and style of your posts. Are you aiming for a formal, professional voice or a casual, friendly vibe? Having a consistent tone helps your audience feel connected and fosters trust. Remember, consistency is not only about posting frequently but also about aligning your visuals, voice, and message.</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="image _relative image-anime mt-40">
+                                                    <img class="w-full" src="assets/img/blog/blog-details-image2.png" alt="vexon" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="image _relative image-anime mt-40">
+                                                    <img class="w-full" src="assets/img/blog/blog-details-image3.png" alt="vexon" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+        
+                                <article>
+                                    <div class="heading1 mt-40">
+                                        <h3>Creating Valuable Content</h3>
+                                        <p class="mt-16">Content is the heart of personal branding on social media. To build a loyal audience, your content should educate, inspire, or entertain. Start by creating a content calendar and brainstorming ideas that align with your brand’s message. Here are some types of content to consider:</p>
+                                        <p class="mt-16 p-with-sapn"><span>Educational Content:</span> Share insights, tips, or tutorials related to your expertise. Position yourself as a thought leader by delivering value.</p>
+                                        <p class="mt-10 p-with-sapn"><span>Behind-the-Scenes:</span> Give a glimpse into your life or work process. This humanizes your brand and makes you more relatable.</p>
+                                        <p class="mt-10 p-with-sapn"><span>Storytelling:</span> Use stories to connect emotionally with your audience. Share experiences, challenges, or milestones that have shaped your journey.</p>
+                                        <p class="mt-10 p-with-sapn"><span>User Engagement:</span> Ask questions, create polls, or invite followers to share their experiences. This not only increases engagement but also strengthens your community.</p>
+                                        <p class="mt-20">Plan a mix of these content types to keep your feed dynamic and engaging, and always remember to provide value.</p>
+                                    </div>
+                                </article>
+        
+                                <article>
+                                    <div class="heading1 mt-50">
+                                        <h3>Leveraging Hashtags and Keywords</h3>
+                                        <p class="mt-16">Hashtags and keywords can dramatically improve the visibility of your content. Research popular and relevant hashtags in your niche and incorporate them into your posts. On platforms like Instagram and LinkedIn, hashtags help your content reach users who don’t follow you yet. However, avoid overloading your posts with too many hashtags—5-10 carefully selected ones are usually enough.</p>
+                                        <p class="mt-20">Using keywords effectively in your profile and posts can also enhance discoverability, especially on platforms with search functions like LinkedIn and Twitter. Think of words and phrases your audience might use to find information in your niche, and strategically incorporate them into your bio, captions, and content.</p>
+        
+                                        <h3 class="mt-40">Staying Authentic and True to Your Brand</h3>
+                                        <p class="mt-16">Finally, one of the most important aspects of personal branding is authenticity. Your audience can tell when you’re genuine and when you’re not, and they’re more likely to engage with a brand that feels real. Be transparent about your journey, share your wins and losses, and let your true personality shine through. Authenticity fosters trust, which is the foundation of any strong brand.</p>
+                                        <p class="mt-16">As you grow, you may face pressure to conform to trends or present a certain image. Resist the urge to compromise on your values or misrepresent yourself. A strong personal brand is built on honesty, consistency, and the courage to be yourself.</p>
+                                    </div>
+                                </article>
+        
+                            </div>
+                        </div>
+        
+                        <div class="col-lg-4">
+                            <div class="blog1-sidebar-area mt-40 ml-30 sm:ml-0 md:ml-0 md:mt-30 sm:mt-30">
+                                
+                                <div class="sidebar-details-widget_1 _author-intro mt-40">
+                                    <div class="sidebar-author-thumb text-center">
+                                        <img src="assets/img/blog/sidebar-author1.png" alt="vexon" />
+                                        <h4>Jerry Helfer</h4>
+                                        <div class="heading1">
+                                            <p>Whether you’re a tech enthusiast or a business leader, these emerging trends are reshaping the future and offering endless opportunities for growth and creativity.</p>
+                                        </div>
+                                        <div class="footer-social1">
+                                            <ul>
+                                                <li>
+                                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                                </li>
+                                                <li>
+                                                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                                                </li>
+                                                <li>
+                                                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                                                </li>
+                                                <li>
+                                                    <a href="#"><i class="fa-regular fa-basketball"></i></a>
+                                                </li>
+                                                <li>
+                                                    <a href="#"><i class="fa-brands fa-behance"></i></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sidebar-details-widget_1 _recent-posts mt-40">
+                                    <h3>Recent Post</h3>
+        
+                                    <div class="blog1-recent-box">
+                                        <div class="">
+                                            <div class="recent-thumb">
+                                                <img src="assets/img/blog/blog1-recent1.png" alt="vexon" />
+                                            </div>
+                                        </div>
+                                        <div class="heading">
+                                            <a href="#" class="date"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 13, 2024</a>
+                                            <h5><a href="blog-single.html">The Power of Storytelling: How Make Your Brand’s Voice...</a></h5>
+                                        </div>
+                                    </div>
+        
+                                    <div class="blog1-recent-box mt-16">
+                                        <div class="">
+                                            <div class="recent-thumb">
+                                                <img src="assets/img/blog/blog1-recent2.png" alt="vexon" />
+                                            </div>
+                                        </div>
+                                        <div class="heading">
+                                            <a href="#" class="date"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 12, 2024</a>
+                                            <h5><a href="blog-single.html">Mastering Content Calendars: A Guide to Consistent Strat...</a></h5>
+                                        </div>
+                                    </div>
+        
+                                    <div class="blog1-recent-box mt-16">
+                                        <div class="">
+                                            <div class="recent-thumb">
+                                                <img src="assets/img/blog/blog1-recent3.png" alt="vexon" />
+                                            </div>
+                                        </div>
+                                        <div class="heading">
+                                            <a href="#" class="date"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 21, 2024</a>
+                                            <h5><a href="blog-single.html">Social Media Trends for 2024: What to Watch and How to...</a></h5>
+                                        </div>
+                                    </div>
+        
+                                    <div class="blog1-recent-box mt-16">
+                                        <div class="">
+                                            <div class="recent-thumb">
+                                                <img src="assets/img/blog/blog1-recent4.png" alt="vexon" />
+                                            </div>
+                                        </div>
+                                        <div class="heading">
+                                            <a href="#" class="date"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 19, 2024 </a>
+                                            <h5><a href="blog-single.html">Creating a Visual Identity: Tips for Aesthetic & Brand Consi...</a></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!--===== BLOG DETAILS AREA START=======-->
+        
+            <!--===== BLOG AREA START=======-->
+        
+            <div class="details-page-boxs sp bg1">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 m-auto text-center">
+                            <div class="heading1">
+                                <h2>More Blogs</h2>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="space30"></div>
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="blog1-single-box mt-30">
+                                <div class="thumbnail image-anime">
+                                    <img src="assets/img/blog/blog1-image6.png" alt="vexon" />
+                                </div>
+                                <div class="heading1">
+                                    <div class="social-area">
+                                        <a href="social-media.html" class="social">Brand Consistency</a>
+                                        <a href="categories.html" class="time"><img src="assets/img/icons/time1.svg" alt="vexon" /> 3 min read</a>
+                                    </div>
+                                    <h4><a href="blog-single.html">Creating a Visual Identity: Tips for Aesthetic and Brand Consistency </a></h4>
+                                    <p class="mt-16">This post covers tips on color schemes, fonts, and visuals to keep your profile visually appealing and cohesive.</p>
+                                    <div class="author-area">
+                                        <div class="author">
+                                            <div class="author-tumb">
+                                                <img src="assets/img/blog/blog1-author5.png" alt="vexon" />
+                                            </div>
+                                            <a href="author.html" class="author-text">Katie Sims</a>
+                                        </div>
+                                        <div class="date">
+                                            <a href="#"><img src="assets/img/icons/date1.svg" alt="vexon" /> Nov 6, 2024 </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="col-md-6 col-lg-4">
+                            <div class="blog1-single-box mt-30">
+                                <div class="thumbnail image-anime">
+                                    <img src="assets/img/blog/blog1-image7.png" alt="vexon" />
+                                </div>
+                                <div class="heading1">
+                                    <div class="social-area">
+                                        <a href="social-media.html" class="social">Gen - Z</a>
+                                        <a href="categories.html" class="time"><img src="assets/img/icons/time1.svg" alt="vexon" /> 3 min read</a>
+                                    </div>
+                                    <h4><a href="blog-single.html">How to Build Authentic Connections with the New Generation</a></h4>
+                                    <p class="mt-16">Gen Z is reshaping digital interaction. Learn what matters to this generation and how to create authentic, meaningful content.</p>
+                                    <div class="author-area">
+                                        <div class="author">
+                                            <div class="author-tumb">
+                                                <img src="assets/img/blog/blog1-author5.png" alt="vexon" />
+                                            </div>
+                                            <a href="author.html" class="author-text">David Elson</a>
+                                        </div>
+                                        <div class="date">
+                                            <a href="#"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 26, 2024 </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="col-md-6 col-lg-4">
+                            <div class="blog1-single-box mt-30">
+                                <div class="thumbnail image-anime">
+                                    <img src="assets/img/blog/blog1-image8.png" alt="vexon" />
+                                </div>
+                                <div class="heading1">
+                                    <div class="social-area">
+                                        <a href="social-media.html" class="social">Social Media</a>
+                                        <a href="categories.html" class="time"><img src="assets/img/icons/time1.svg" alt="vexon" /> 3 min read</a>
+                                    </div>
+                                    <h4><a href="blog-single.html">Harnessing Analytics: Using Data to Refine Your Social Media Strategy</a></h4>
+                                    <p class="mt-16">Gen Z is reshaping digital interaction. Learn what matters to this generation and how to create authentic, meaningful content.</p>
+                                    <div class="author-area">
+                                        <div class="author">
+                                            <div class="author-tumb">
+                                                <img src="assets/img/blog/blog1-author5.png" alt="vexon" />
+                                            </div>
+                                            <a href="author.html" class="author-text">Kenneth Allen</a>
+                                        </div>
+                                        <div class="date">
+                                            <a href="#"><img src="assets/img/icons/date1.svg" alt="vexon" /> Oct 26, 2024 </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!--===== BLOG AREA START=======-->
+        
+            <!--===== FOOTER AREA START=======-->
+        
+            <!--===== FOOTER AREA END=======-->
+        
+            <!--=== js === -->
+        
+        </body>
+        
+        </html>
+    '''
+
+    response = JsonResponse({"data": blog})
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
+
+def send_email(template, subject, data, email):
+    html_message = render_to_string(template,
+                                    {'user_data': data, 'email': email})
+
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    email = EmailMessage(subject, html_message, from_email, [email])
+    email.extra_headers = {
+        'X-Priority': '1',
+        'Importance': 'high',
+        'List-Unsubscribe': f'<mailto:{settings.DEFAULT_FROM_EMAIL}>',
+    }
+    email.content_subtype = 'html'
+    email.send()
 
 def test(request):
     return render(request,"test.html")

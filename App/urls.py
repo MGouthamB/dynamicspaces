@@ -39,6 +39,7 @@ urlpatterns = [
     path('GroziitIntegrations',views.GroziitIntegrations,name="GroziitIntegrations"),
     path('GroziitIntegrations/<int:id>',views.GroziitIntegrationsDetails,name="GroziitIntegrationsDetails"),
 
+    path('getBlog/<str:slug>/<str:id>',views.getBlog ,name="getBlog"),
     path("test",views.test,name="test")
     # path('dynamicspace', views.)
 ]
