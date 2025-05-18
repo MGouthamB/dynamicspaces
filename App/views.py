@@ -1273,6 +1273,7 @@ def change_password(request):
 @xframe_options_exempt
 @csrf_exempt
 def dynamicspace_form(request):
+    print("helooooo")
     try:
         email = ""
         if not logged_in(request):
