@@ -707,7 +707,7 @@ def index(request):
     #Adding 1st form field data as preview
     for form_data in datas:
         #print(form_data.data.split("<br>", 1)[0].split(":")[1])
-        form_data.preview = form_data.data.split("<br><b>")[0].split("<br>")[1]
+        form_data.preview = form_data.data.split("<br><b>")[0].split("</b>:")[1]
 
 
     return render(request, "index.html",
@@ -1273,7 +1273,6 @@ def change_password(request):
 @xframe_options_exempt
 @csrf_exempt
 def dynamicspace_form(request):
-    print("helooooo")
     try:
         email = ""
         if not logged_in(request):
@@ -1306,7 +1305,7 @@ def dynamicspace_form(request):
             if i[0] == "email":
                 user_email = i[1]
             POSTdata += (
-               "<b>" + i[0].capitalize() + "</b>: " + i[1] + "<br>"
+               "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
             )
 
         if profile.account_type == "Job":
@@ -1604,7 +1603,7 @@ def integrations_form(request,id,integration_id):
         POSTdata = ""
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
-            POSTdata += "<b>" + i[0].capitalize() + "</b>: <br/>" + i[1] + "<br>"
+            POSTdata += "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
 
         if profile.account_type == "Job":
             integration = AccountIntegrations.objects.get(account=email, integration_id=integration_id)
