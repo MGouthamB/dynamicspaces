@@ -1547,9 +1547,10 @@ def dynamicspace_form(request):
             data.posted_for = email
             data.form_name = request.POST['formname']
             # print(request.POST['formname'], request.POST['phone_number'])
+            data.save()
             send_email('drd_registration.html', "Thank you for your registration!", POSTdata, user_email)
             print(user_email, "sending email to user...")
-            data.save()
+
         #     # Get the file from the request
         #     file = request.FILES['files']
         #
