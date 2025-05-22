@@ -1541,15 +1541,15 @@ def dynamicspace_form(request):
                 recipient_list=[job.eemail.lower()])
 
         if profile.account_type == "Form":
-            print(request.POST['formname'])
-            data = FormData()
-            data.data = POSTdata
-            data.posted_for = email
-            data.form_name = request.POST['formname']
-            # print(request.POST['formname'], request.POST['phone_number'])
-            data.save()
-            print(user_email, "sending email to user...")
-            send_email('drd_registration.html', "Thank you for your registration!", POSTdata, user_email)
+
+            if not FormData.objects.filter(data__icontains=user_email).exists():
+                data = FormData()
+                data.data = POSTdata
+                data.posted_for = email
+                data.form_name = request.POST['formname']
+                data.save()
+                print(user_email, "sending email to user...")
+                send_email('drd_registration.html', "Thank you for your registration!", POSTdata, user_email)
 
 
         #     # Get the file from the request

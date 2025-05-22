@@ -6,16 +6,16 @@ from datetime import datetime
 # Create your models here.
 class Jobs(models.Model):
     title= models.CharField(max_length=500)
-    keywords=models.CharField(max_length=500)
+    keywords=models.CharField(max_length=500,blank=True)
     company=models.CharField(max_length=500,default="")
     sdescription=models.CharField(max_length=500)
-    description=RichTextField()
-    background_img_url = models.CharField(max_length=500)
-    logo_img_url = models.CharField(max_length=500)
+    description=RichTextField(blank=True)
+    background_img_url = models.CharField(max_length=500,blank=True)
+    logo_img_url = models.CharField(max_length=500,blank=True)
     location=models.CharField(max_length=500)
     eemail = models.CharField(max_length=500)
     expire_in_days=models.DateField(null=True)
-    time=models.DateField(editable=False,default=timezone.now)
+    time=models.DateField(editable=True,default=timezone.now)
     posted_by=models.CharField(max_length=500)
     need_files = models.BooleanField(default=False)
 
@@ -50,7 +50,7 @@ class IntegrationJobApplication(models.Model):
     resume_link = models.URLField()
 
 class FormData(models.Model):
-    data = models.CharField(max_length=2000)
+    data = models.TextField(default="")
     posted_for = models.CharField(max_length=500)
     time = models.DateField(editable=False, default=timezone.now)
     form_name = models.CharField(max_length=500)
