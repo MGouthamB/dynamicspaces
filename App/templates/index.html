@@ -99,6 +99,8 @@
                           <th scope="col">IframeLink</th>
                           <th>View</th>
                           <th scope="col">Edit/Delete</th>
+                          <th scope="col">Download</th>
+                         
                       </tr>
                     </thead>
                     <tbody class="jobs_list">
@@ -120,6 +122,9 @@
                                 <a href="delete-post?id={{ i.id }}" class="text-primary"><i
                                         class="bi bi-trash text-primary"></i></a>
                             </td>
+                        <td style="align-content: center"><a href="ExportFormData?title={{ i.title }}"
+                                                                 class="text-primary"
+                                                                 style="align-content: center;display: block"> <i class="bi bi-cloud-download"></i> Download CSV</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>

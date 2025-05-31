@@ -1,5 +1,5 @@
 import json
-
+import re
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
@@ -20,6 +20,8 @@ import boto3
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+import csv
+
 
 # from gdstorage.storage import GoogleDriveStorage
 
@@ -1302,8 +1304,9 @@ def dynamicspace_form(request):
         user_email = ""
         for i in request.POST.items():
             if i[0] in ["csrfmiddlewaretoken","formname"]: continue
-            if i[0] == "email":
+            if i[0].lower() == "email":
                 user_email = i[1]
+                #print(user_email, "email captured")
             POSTdata += (
                "<b>" + i[0].capitalize() + "</b>:" + i[1] + "<br>"
             )
@@ -2354,6 +2357,32 @@ def send_email(template, subject, data, email):
     }
     email.content_subtype = 'html'
     email.send()
+    # send_mail(subject=subject, message='Here is the message.', from_email=from_email, recipient_list=[email], fail_silently=False, html_message=html_message)
+
+    print(subject, from_email, email )
+
+def export_form_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    datas = FormData.objects.filter(posted_for=request.session['email']).filter(form_name=request.GET["title"])
+    flag = 0
+    for form_data in datas:
+        if flag == 0:
+            pattern = "<b>" + r"(.*?)" + "</b>"
+            headers = re.findall(pattern, form_data.data)
+            print(headers)
+            flag = 1
+            writer.writerow(headers)
+            continue
+        #print(form_data.data)
+        pattern = "<br>" + r"(.*?)" + "<br>"
+        data = re.findall(pattern, form_data.data)
+        print(data)
+        writer.writerow(data)
+    filename = request.GET["title"]+".csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
 
 def test(request):
     return render(request,"test.html")

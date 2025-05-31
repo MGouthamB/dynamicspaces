@@ -38,8 +38,8 @@ urlpatterns = [
     path('GroziitContentAPI',views.GroziitContentAPI,name="GroziitContentAPI"),
     path('GroziitIntegrations',views.GroziitIntegrations,name="GroziitIntegrations"),
     path('GroziitIntegrations/<int:id>',views.GroziitIntegrationsDetails,name="GroziitIntegrationsDetails"),
-
     path('getBlog/<str:slug>/<str:id>',views.getBlog ,name="getBlog"),
+    path('ExportFormData',views.export_form_csv,name="ExportFormData"),
     path("test",views.test,name="test")
     # path('dynamicspace', views.)
 ]
