@@ -2370,14 +2370,14 @@ def export_form_csv(request):
         if flag == 0:
             pattern = "<b>" + r"(.*?)" + "</b>"
             headers = re.findall(pattern, form_data.data)
-            print(headers)
+            #print(headers)
             flag = 1
             writer.writerow(headers)
             continue
         #print(form_data.data)
         pattern = "<br>" + r"(.*?)" + "<br>"
         data = re.findall(pattern, form_data.data)
-        print(data)
+        #print(data)
         writer.writerow(data)
     filename = request.GET["title"]+".csv"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
