@@ -2374,7 +2374,7 @@ def export_form_csv(request):
             flag = 1
             writer.writerow(headers)
             continue
-        print(form_data.data)
+        #print(form_data.data)
         pattern = "</b>:" + r"(.*?)" + "<br>"
         data = re.findall(pattern, form_data.data)
         #print(data)
